@@ -1,0 +1,3 @@
+-- Configs which will be ignored by git
+-- Suitable for some per host configs
+-- Will be loaded before booting lazy.nvim, after loading options, keymaps, autocmd and cmds.

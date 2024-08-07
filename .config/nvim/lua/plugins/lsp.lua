@@ -1,0 +1,264 @@
+return {
+  {
+    "neovim/nvim-lspconfig",
+    -- See https://github.com/LazyVim/LazyVim/discussions/1583
+    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+    dependencies = { "williamboman/mason-lspconfig.nvim" },
+    opts = {
+      -- Lsp keymaps
+      keymaps = {
+        { "gd", "<cmd>Telescope lsp_definitions<cr>", desc = "Goto definition" },
+        { "gD", vim.lsp.buf.declaration, desc = "Goto declaration" },
+        { "gr", "<cmd>Telescope lsp_references<cr>", desc = "Goto references" },
+        { "gI", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto implementation" },
+        { "gy", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto t[y]pe definition" },
+        { "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Search document symbols" },
+        { "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Search workspace symbols" },
+        { "<leader>cr", vim.lsp.buf.rename, desc = "Rename" },
+        { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
+        toggle_inlay_hints = {
+          "<leader>uh",
+          function()
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
+          end,
+          desc = "Toggle inlay hints",
+        },
+      },
+      -- Inlay hints
+      inlay_hints = {
+        enabled = true,
+      },
+      -- Codelens
+      codelens = {
+        enabled = false,
+      },
+      -- Lsp cursor word highlighting
+      document_highlight = {
+        enabled = true,
+      },
+      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
+      -- Enable the following language servers
+      --
+      --  Add any additional override configuration in the following tables. Available keys are:
+      --  - cmd (table): Override the default command used to start the server
+      --  - filetypes (table): Override the default list of associated filetypes for the server
+      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
+      --  - settings (table): Override the default settings passed when initializing the server.
+      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      servers = {
+        -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
+        lua_ls = {
+          -- cmd = {...},
+          -- filetypes = { ...},
+          -- capabilities = {},
+          -- keymaps = {} -- Additional keymaps, not nvim_lspconfig options
+          settings = {
+            Lua = {
+              workspace = {
+                checkThirdParty = false,
+              },
+              codeLens = {
+                enable = true,
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              doc = {
+                privateName = { "^_" },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
+              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+              -- diagnostics = { disable = { 'missing-fields' } },
+            },
+          },
+        },
+      },
+      -- Like LazyVim, additional setup can be set.
+      -- Return true if don't want config server using nvim-lspconfig
+      setups = {},
+    },
+    config = function(_, opts)
+      -- Process keymaps
+      for _, keymap in pairs(opts.keymaps) do
+        Easynvim.process_keymap(keymap)
+      end
+      for _, server in pairs(opts.servers) do
+        if server.keymaps then
+          for _, keymap in pairs(server.keymaps) do
+            Easynvim.process_keymap(keymap)
+          end
+        end
+      end
+
+      local easynvim_lspattach = vim.api.nvim_create_augroup("easynvim_lspattch", { clear = true })
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = easynvim_lspattach,
+        callback = function(args)
+          -- A help function to map lsp mappings
+          local function lsp_map(keymap)
+            local keymap_opts = keymap[4]
+            keymap_opts.buffer = args.buf
+            vim.keymap.set(keymap[1], keymap[2], keymap[3], keymap[4])
+          end
+
+          -- Map general lsp keymaps
+          -- We reuse opts.keymap
+          for _, keymap in ipairs(opts.keymaps) do
+            lsp_map(keymap)
+          end
+
+          -- Default, we have:
+          -- K, etc.
+          -- See ":h default-mappings"
+
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+          if not client then
+            return
+          end
+
+          -- Map specific lsp keymaps
+          local specific_lsp_keymaps = opts.servers[client.config.name].keymaps
+          if specific_lsp_keymaps then
+            for _, keymap in pairs(specific_lsp_keymaps) do
+              lsp_map(keymap)
+            end
+          end
+
+          -- Document highlight
+          if
+            opts.document_highlight.enabled
+            and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight)
+          then
+            local highlight_augroup = vim.api.nvim_create_augroup("easynvim_lsp_highlight", { clear = false })
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+              buffer = args.buf,
+              group = highlight_augroup,
+              callback = vim.lsp.buf.document_highlight,
+            })
+
+            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+              buffer = args.buf,
+              group = highlight_augroup,
+              callback = vim.lsp.buf.clear_references,
+            })
+
+            vim.api.nvim_create_autocmd("LspDetach", {
+              group = vim.api.nvim_create_augroup("easynvim_lsp_detach", { clear = true }),
+              callback = function(args2)
+                vim.lsp.buf.clear_references()
+                vim.api.nvim_clear_autocmds({ group = "easynvim_lsp_highlight", buffer = args2.buf })
+              end,
+            })
+          end
+
+          -- Codelens
+          if opts.codelens.enabled and client.supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
+            vim.lsp.codelens.refresh()
+            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+              buffer = args.buf,
+              callback = vim.lsp.codelens.refresh,
+            })
+          end
+
+          -- Inlay hints & toggle inlay hints keymap
+          if opts.inlay_hints.enabled and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+            vim.lsp.inlay_hint.enable(true, { bufnr = 0 }) -- Enable inlay hint of the current buffer
+            lsp_map(opts.keymaps.toggle_inlay_hints) -- map toggle_inlay_hints
+          end
+        end,
+      })
+
+      -- LSP servers and clients are able to communicate to each other what features they support.
+      --  By default, Neovim doesn't support everything that is in the LSP specification.
+      --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
+      --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+
+      local servers = opts.servers
+      local setups = opts.setups
+      local ensure_installed = vim.tbl_keys(servers)
+
+      -- Setup mason-lspconfig here.
+      -- Means to install some language servers and setup lsp
+      require("mason-lspconfig").setup({
+        ensure_installed = ensure_installed, -- ensure install servers
+        handlers = {
+          function(server_name)
+            -- Skip setup server if additional setup return true
+            if setups[server_name] and setups[server_name]() then
+              return
+            end
+
+            local server = servers[server_name] or {}
+            -- This handles overriding only values explicitly passed
+            -- by the server configuration above. Useful when disabling
+            -- certain features of an LSP (for example, turning off formatting for tsserver)
+            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            require("lspconfig")[server_name].setup(server)
+          end,
+        },
+      })
+    end,
+  },
+  {
+    -- Ref LazyVim mason config
+    "williamboman/mason.nvim",
+    cmd = "Mason",
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shfmt",
+      },
+    },
+    config = function(_, opts)
+      require("mason").setup(opts)
+      local mr = require("mason-registry")
+      mr:on("package:install:success", function()
+        vim.defer_fn(function()
+          -- trigger FileType event to possibly load this newly installed LSP server
+          require("lazy.core.handler.event").trigger({
+            event = "FileType",
+            buf = vim.api.nvim_get_current_buf(),
+          })
+        end, 100)
+      end)
+
+      mr.refresh(function()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
+        end
+      end)
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = "williamboman/mason.nvim",
+    lazy = true,
+    -- Will call setup in nvim-lspconfig
+  },
+  -- Lua lsp
+  {
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- See the configuration section for more details
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "luvit-meta/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+  { "Bilal2453/luvit-meta" }, -- optional `vim.uv` typings
+}
