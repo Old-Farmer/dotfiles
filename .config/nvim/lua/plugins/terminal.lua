@@ -14,7 +14,7 @@ return {
       { "<leader>tH", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Terminal (horizontal) toggle" },
       { "<leader>tV", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Terminal (vertical) toggle" },
       { "<leader>tT", "<cmd>ToggleTerm direction=tab<cr>", desc = "Terminal (tab) toggle" },
-      { "<C-\\>" },
+      { "<C-/>" },
       { "<leader>tn", "<cmd>ToggleTermSetName<cr>", desc = "Set terminal name" },
       { "<leader>ts", "<cmd>TermSelect<cr>", desc = "Select terminals" },
     },
@@ -26,7 +26,7 @@ return {
           return math.floor(vim.o.columns * 0.4)
         end
       end,
-      open_mapping = "<c-\\>",
+      open_mapping = "<c-/>",
       direction = "float",
       -- shade_terminals = false,
       float_opts = {

@@ -5,6 +5,7 @@ Global_config = {
   im = true,
   languages = {
     c_cpp = true,
+    markdown = true,
   },
 }
 

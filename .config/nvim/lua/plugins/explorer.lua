@@ -43,6 +43,7 @@ return {
           enable = false,
         },
         renderer = {
+          icons = { git_placement = "right_align" },
           group_empty = true,
           highlight_hidden = "all",
           indent_markers = {

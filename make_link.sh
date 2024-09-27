@@ -9,3 +9,4 @@ ln -sr ./.config/fcitx5 ~/.config/
 ln -sr ./.config/kitty ~/.config/
 ln -sr ./.config/starship.toml ~/.config/
 ln -sr ./.config/neovide ~/.config/
+ln -sr ./.config/git ~/.config/

@@ -177,7 +177,7 @@ function quiet() {
 }
 
 # # prompt defined by Shixin Chai
-# # source /etc/bash_completion.d/git-prompt
+# source /etc/bash_completion.d/git-prompt
 # export GIT_PS1_DESCRIBE_STYLE='contains'
 # export GIT_PS1_SHOWCOLORHINTS='y'
 # export GIT_PS1_SHOWDIRTYSTATE='y'
@@ -214,11 +214,6 @@ export PATH=$PATH:~/go/bin/
 
 # starship
 eval "$(starship init bash)"
-# seems not work on tmux
-function set_win_title() {
-    echo -ne "\033]0; $(basename "$PWD") \007"
-}
-starship_precmd_user_func="set_win_title"
 
 # fnm
 export PATH="$HOME/.local/share/fnm:$PATH"

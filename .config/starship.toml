@@ -72,6 +72,10 @@ symbol = " "
 [git_branch]
 symbol = " "
 
+[git_status]
+ignore_submodules = true
+# disabled = true
+
 [golang]
 symbol = " "
 format = 'via [$symbol]($style)'

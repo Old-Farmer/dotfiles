@@ -1,6 +1,6 @@
 if vim.g.vscode then
   -- options
-  vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
+  vim.g.mapleader = " "      -- Make sure to set `mapleader` before lazy so your mappings are correct
   vim.g.maplocalleader = " " -- Same for `maplocalleader`
   vim.opt.clipboard = "unnamedplus"
   vim.opt.ignorecase = true
@@ -89,7 +89,7 @@ if vim.g.vscode then
   vim.keymap.set("n", "<leader>bo", "<cmd>Tabonly<cr>")
 
   -- window
-  -- vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good" })
+  vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
   -- vim.keymap.set("n", "<C-H>", function()
   --   vscode.call("workbench.action.navigateLeft")
   -- end)
@@ -102,6 +102,18 @@ if vim.g.vscode then
   -- vim.keymap.set("n", "<C-J>", function()
   --   vscode.call("workbench.action.navigateDown")
   -- end)
+
+  -- Search
+  vim.keymap.set("n", "<leader>sf", function()
+    vscode.action("workbench.action.quickOpen")
+  end)
+  vim.keymap.set("n", "<leader><space>", function()
+    vscode.action("workbench.action.quickOpen")
+  end)
+  -- workbench.action.findInFiles
+  vim.keymap.set("n", "<leader>sg", function()
+    vscode.action("workbench.action.findInFiles")
+  end)
 
   -- format
   vim.keymap.set("n", "<leader>cf", function()
@@ -127,6 +139,9 @@ if vim.g.vscode then
   end)
   vim.keymap.set("n", "<leader>py", function()
     vscode.action("editor.action.peekTypeDefinition")
+  end)
+  vim.keymap.set("n", "<leader>ca", function()
+    vscode.action("editor.action.quickFix")
   end)
 
   -- problem
@@ -168,6 +183,10 @@ if vim.g.vscode then
   vim.keymap.set("n", "<leader>l", function()
     vscode.action("workbench.action.toggleAuxiliaryBar")
   end)
+  -- pane
+  vim.keymap.set("n", "<leader>j", function()
+    vscode.action("workbench.action.togglePanel")
+  end)
 
   -- clangd
   vim.keymap.set("n", "ch", function()
@@ -193,6 +212,43 @@ if vim.g.vscode then
     vscode.action("bookmarks.jumpToPrevious")
   end)
 
+  -- symbols
+  vim.keymap.set("n", "<leader>ss", function()
+    vscode.action("workbench.action.gotoSymbol")
+  end)
+  vim.keymap.set("n", "<leader>sa", function()
+    vscode.action("workbench.action.showAllSymbols")
+  end)
+
+  -- debug
+  vim.keymap.set("n", "<leader>dd", function()
+    vscode.action("workbench.action.debug.start")
+  end)
+  vim.keymap.set("n", "<leader>ds", function()
+    vscode.action("workbench.action.debug.stop")
+  end)
+  vim.keymap.set("n", "<leader>dr", function()
+    vscode.action("workbench.action.debug.restart")
+  end)
+  vim.keymap.set("n", "<leader>dc", function()
+    vscode.action("workbench.action.debug.continue")
+  end)
+  vim.keymap.set("n", "<leader>dk", function()
+    vscode.action("editor.debug.action.showDebugHover")
+  end)
+  vim.keymap.set("n", "<leader>db", function()
+    vscode.action("editor.debug.action.toggleBreakpoint")
+  end)
+  vim.keymap.set("n", "<leader>do", function()
+    vscode.action("workbench.action.debug.stepOver")
+  end)
+  vim.keymap.set("n", "<leader>du", function()
+    vscode.action("workbench.action.debug.stepOut")
+  end)
+  vim.keymap.set("n", "<leader>di", function()
+    vscode.action("workbench.action.debug.stepInto")
+  end)
+
   -- autocmds
   vim.api.nvim_create_autocmd({ "FileType" }, {
     pattern = "*",
@@ -207,10 +263,21 @@ if vim.g.vscode then
 end
 
 -- plugins
+
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out,                            "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -222,7 +289,6 @@ require("lazy").setup({
 
       -- I have copy some configs from LazyVim
       event = { "BufReadPost", "BufWritePost", "BufNewFile", "VeryLazy" },
-      -- lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
       init = function(plugin)
         -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
         -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
@@ -242,6 +308,7 @@ require("lazy").setup({
           -- "diff",
           -- "html",
           "go",
+          "java",
           -- "javascript",
           "jsdoc",
           "json",
@@ -497,25 +564,26 @@ require("lazy").setup({
       opts = {},
       -- stylua: ignore
       keys = {
-        { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-        { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-        { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-        { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-        { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+        { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+        { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+        { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+        { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+        { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
       },
     },
   },
   defaults = {
-    -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
-    -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
-    lazy = false,
+    lazy = true,
     -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
     -- have outdated releases, which may break your Neovim install.
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "habamax" } },
-  checker = { enabled = true }, -- automatically check for plugin updates
+  checker = {
+    enabled = true,
+    notify = false,
+  }, -- automatically check for plugin updates
   performance = {
     rtp = {
       -- disable some rtp plugins
