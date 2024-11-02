@@ -7,6 +7,7 @@ if vim.g.vscode then
   vim.opt.smartcase = true
   vim.opt.updatetime = 250
   vim.opt.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
+  -- vim.opt.autoindent = false
 
   local vscode = require("vscode")
 
@@ -102,6 +103,7 @@ if vim.g.vscode then
   -- vim.keymap.set("n", "<C-J>", function()
   --   vscode.call("workbench.action.navigateDown")
   -- end)
+
 
   -- Search
   vim.keymap.set("n", "<leader>sf", function()
