@@ -1,7 +1,7 @@
 {
   "flash.nvim": { "branch": "main", "commit": "34c7be146a91fec3555c33fe89c7d643f6ef5cf1" },
-  "im-autoswitch.nvim": { "branch": "master", "commit": "c2987ce8c09499af7ee4e5975dd6c29ff90c5d64" },
-  "lazy.nvim": { "branch": "main", "commit": "cf8ecc2c5e4332760431a33534240b0cbc6680ab" },
-  "nvim-treesitter": { "branch": "master", "commit": "9565149634ec5e0fc9e740f4edb6cab26bf7fb6f" },
+  "im-autoswitch.nvim": { "branch": "master", "commit": "3aa6a24b87302cf781b894692d98d0149c79bb0f" },
+  "lazy.nvim": { "branch": "main", "commit": "56ead98e05bb37a4ec28930a54d836d033cf00f2" },
+  "nvim-treesitter": { "branch": "master", "commit": "69170c93149ddb71a22bd954514806395c430c02" },
   "nvim-treesitter-textobjects": { "branch": "main", "commit": "e0a7b5a6b7f18a5d508d05ca8853273db7bcbe50" }
 }

@@ -7,7 +7,6 @@ if vim.g.vscode then
   vim.opt.smartcase = true
   vim.opt.updatetime = 250
   vim.opt.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
-  -- vim.opt.autoindent = false
 
   local vscode = require("vscode")
 
@@ -90,7 +89,7 @@ if vim.g.vscode then
   vim.keymap.set("n", "<leader>bo", "<cmd>Tabonly<cr>")
 
   -- window
-  vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
+  -- vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
   -- vim.keymap.set("n", "<C-H>", function()
   --   vscode.call("workbench.action.navigateLeft")
   -- end)
@@ -251,6 +250,22 @@ if vim.g.vscode then
     vscode.action("workbench.action.debug.stepInto")
   end)
 
+  -- see https://github.com/vscode-neovim/vscode-neovim/issues/2288
+  vim.keymap.set('n', 'o', function()
+    vscode.action('editor.action.insertLineAfter', {
+      callback = function()
+        vim.cmd.startinsert({ bang = true })
+      end,
+    })
+  end)
+  vim.keymap.set('n', 'O', function()
+    vscode.action('editor.action.insertLineBefore', {
+      callback = function()
+        vim.cmd.startinsert({ bang = true })
+      end,
+    })
+  end)
+
   -- autocmds
   vim.api.nvim_create_autocmd({ "FileType" }, {
     pattern = "*",
@@ -261,6 +276,7 @@ if vim.g.vscode then
     callback = function()
       vim.highlight.on_yank({ higroup = "Search" })
     end,
+    desc = "highlight when yanking",
   })
 end
 
