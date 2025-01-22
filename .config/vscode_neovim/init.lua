@@ -121,6 +121,7 @@ if vim.g.vscode then
     vscode.action("editor.action.formatDocument")
   end)
   vim.keymap.set("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
+  -- vim.keymap.set({ "n", "v" }, "<leader>f", "<leader>cf", { remap = true })
 
   -- lsp
   vim.keymap.set("n", "gD", function()
@@ -190,12 +191,17 @@ if vim.g.vscode then
   end)
 
   -- clangd
-  vim.keymap.set("n", "ch", function()
+  vim.keymap.set("n", "<leader>ch", function()
     vscode.action("clangd.switchheadersource")
   end)
 
+  -- java
+  vim.keymap.set("n", "<leader>co", function()
+    vscode.action("editor.action.organizeImports")
+  end)
+
   -- markdown
-  vim.keymap.set("n", "cp", function()
+  vim.keymap.set("n", "<leader>cp", function()
     vscode.action("markdown.showPreviewToSide")
   end)
 
@@ -250,21 +256,23 @@ if vim.g.vscode then
     vscode.action("workbench.action.debug.stepInto")
   end)
 
-  -- see https://github.com/vscode-neovim/vscode-neovim/issues/2288
-  vim.keymap.set('n', 'o', function()
-    vscode.action('editor.action.insertLineAfter', {
-      callback = function()
-        vim.cmd.startinsert({ bang = true })
-      end,
-    })
-  end)
-  vim.keymap.set('n', 'O', function()
-    vscode.action('editor.action.insertLineBefore', {
-      callback = function()
-        vim.cmd.startinsert({ bang = true })
-      end,
-    })
-  end)
+  -- Don't use this because I have found some bugs when using them
+  -- e.g. wrong cursor position
+  -- -- see https://github.com/vscode-neovim/vscode-neovim/issues/2288
+  -- vim.keymap.set('n', 'o', function()
+  --   vscode.action('editor.action.insertLineAfter', {
+  --     callback = function()
+  --       vim.cmd.startinsert({ bang = true })
+  --     end,
+  --   })
+  -- end)
+  -- vim.keymap.set('n', 'O', function()
+  --   vscode.action('editor.action.insertLineBefore', {
+  --     callback = function()
+  --       vim.cmd.startinsert({ bang = true })
+  --     end,
+  --   })
+  -- end)
 
   -- autocmds
   vim.api.nvim_create_autocmd({ "FileType" }, {

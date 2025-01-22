@@ -5,7 +5,7 @@ end
 return {
   -- Input method auto switching
   "Old-Farmer/im-autoswitch.nvim",
-  dev = false,
+  dev = true,
   event = "BufEnter",
   opts = {
     cmd_os = {

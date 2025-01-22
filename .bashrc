@@ -209,6 +209,9 @@ export PATH=$HOME/my_scripts:$PATH
 # go apps
 export PATH=$PATH:~/go/bin/
 
+# go bash completion
+complete -C /home/shixinchai/go/bin/gocomplete go
+
 # cargo
 . "$HOME/.cargo/env"
 
@@ -239,4 +242,6 @@ _fzf_compgen_path() {
 _fzf_compgen_dir() {
     fd --type d --hidden --follow --exclude ".git" . "$1"
 }
-complete -C /home/shixinchai/go/bin/gocomplete go
+
+# java home
+export JAVA_HOME="/usr/lib/jvm/default-java/"

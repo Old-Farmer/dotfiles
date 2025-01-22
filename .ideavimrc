@@ -1,0 +1,93 @@
+" options
+
+let mapleader = " "
+let localmapleader = " "
+
+set clipboard=unnamedplus,ideaput
+set gdefault
+set hlsearch
+set ignorecase
+set incsearch
+set smartcase
+set timeoutlen=1000
+
+set scrolloff=8
+
+set relativenumber
+set cursorline
+
+set ideajoin
+set ideamarks
+set ideawrite=file
+
+" plugin set
+let g:NERDTreeMapJumpNextSibling = "<c-s-j>"
+let g:g:NERDTreeMapJumpPrevSibling = "<c-s-k>"
+let g:NERDTreeMapToggleZoom = 'z'
+let g:NERDTreeMapNewFile = 'a'
+let g:NERDTreeMapNewDir = 'A'
+
+" plugin
+
+set commentary " keymap: gc
+set highlightedyank
+" just keep english in normal node, because restoring im in insert mode in this plugin is shit
+set keep-english-in-normal
+set NERDTree
+set peekaboo
+" disable which-key because it's a little bit annoying
+" set which-key
+
+" keymaps
+
+nmap <esc> :nohlsearch<cr>
+
+" tab & buffer
+map <s-h> gT
+map <s-l> gt
+map <leader>bd :bdelete<cr> " not use tabclose, it will just close tab and leave an empty window
+map <leader>bo :tabonly<cr>
+map <leader>bl <Action>(CloseAllToTheLeft)
+map <leader>br <Action>(CloseAllToTheRight)
+
+" code
+map <leader>ca <Action>(ShowIntentionActions)
+map <leader>co <Action>(OptimizeImports)
+map <leader>cf <Action>(ReformatCode)
+" map <leader>f <leader>cf
+map gi <Action>(GotoImplementation)
+map gr <Action>(ShowUsages)
+map K <Action>(ShowHoverInfo)
+map <leader>pd <Action>(QuickImplementations)
+map [d <Action>(GotoPreviousError)
+map ]d <Action>(GotoNextError)
+inoremap <c-e> <c-e><bs> " Use this wierd map to make <c-e> to close popup window
+"imap <c-e> <Action>(PopupMenu-cancel)
+
+" flash
+map s <Action>(flash.search)
+
+" explorer
+map <leader>e :NERDTreeFocus<cr>
+map <leader>E :NERDTreeToggle<cr>
+
+" structure
+map <leader>l <Action>(ActivateStructureToolWindow)
+
+" debug
+map <leader>db <Action>(ToggleLineBreakpoint)
+
+" bookmark
+map <leader>mm <Action>(ToggleBookmarks)
+map <leader>mp <Action>(GotoPreviousBookmark)
+map <leader>mn <Action>(GotoNextBookmark)
+
+" search
+map <leader>sf <Action>(GotoFile)
+map <leader><space> <Action>(GotoFile)
+map <leader>ss <Action>(GotoSymbol)
+map <leader>sg <Action>(FindInPath)
+
+" toggle
+map <leader>tr <Action>(ToggleRenderedDocPresentationForAll)
+map <leader>tR <Action>(ToggleRenderedDocPresentation)

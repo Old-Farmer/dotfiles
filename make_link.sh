@@ -3,6 +3,7 @@
 ln -sr ./.bashrc ~/
 ln -sr ./.inputrc ~/
 ln -sr ./.tmux.conf ~/
+ln -sr ./.ideavimrc ~/
 ln -sr ./.config/nvim ~/.config/
 ln -sr ./.config/vscode_neovim ~/.config/
 ln -sr ./.config/fcitx5 ~/.config/
