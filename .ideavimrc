@@ -45,7 +45,8 @@ nmap <esc> :nohlsearch<cr>
 " tab & buffer
 map <s-h> gT
 map <s-l> gt
-map <leader>bd :bdelete<cr> " not use tabclose, it will just close tab and leave an empty window
+ " not use tabclose, it will just close tab and leave an empty window
+map <leader>bd :bdelete<cr>
 map <leader>bo :tabonly<cr>
 map <leader>bl <Action>(CloseAllToTheLeft)
 map <leader>br <Action>(CloseAllToTheRight)
@@ -61,7 +62,8 @@ map K <Action>(ShowHoverInfo)
 map <leader>pd <Action>(QuickImplementations)
 map [d <Action>(GotoPreviousError)
 map ]d <Action>(GotoNextError)
-inoremap <c-e> <c-e><bs> " Use this wierd map to make <c-e> to close popup window
+ " Use this wierd map to make <c-e> to close popup window
+inoremap <c-e> `<bs>
 "imap <c-e> <Action>(PopupMenu-cancel)
 
 " flash
@@ -91,3 +93,6 @@ map <leader>sg <Action>(FindInPath)
 " toggle
 map <leader>tr <Action>(ToggleRenderedDocPresentationForAll)
 map <leader>tR <Action>(ToggleRenderedDocPresentation)
+
+" jdbc
+map <leader>je <Action>(Console.Jdbc.Execute)

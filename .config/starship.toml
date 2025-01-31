@@ -24,6 +24,7 @@ format = "via [$symbol]($style)"
 
 [conda]
 symbol = " "
+ignore_base = false
 
 [cmake]
 format = "via [$symbol]($style)"
@@ -138,7 +139,7 @@ symbol = " "
 
 [nodejs]
 symbol = " "
-format = 'via [$symbol]($style)'
+# format = 'via [$symbol]($style)'
 
 [ocaml]
 symbol = " "
@@ -210,7 +211,7 @@ format = 'via [$symbol]($style)'
 
 [python]
 symbol = " "
-format = 'via [$symbol]($style)'
+# format = 'via [$symbol]($style)'
 
 [raku]
 format = 'via [$symbol]($style)'

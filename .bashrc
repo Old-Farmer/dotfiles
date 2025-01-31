@@ -117,7 +117,7 @@ alias vic="nvim --clean"
 alias vip="NVIM_APPNAME=no_plugin nvim"
 alias vin="/usr/bin/nvim" # nightly
 alias vi="nvim"
-alias lvi="NVIM_APPNAME=lazyvim nvim" # lazyvim
+alias lvi="NVIM_APPNAME=lazyvim nvim"      # lazyvim
 alias ldevvi="NVIM_APPNAME=lazyvimdev vin" # nightly
 alias kickstartvi="NVIM_APPNAME=kickstart_nvim nvim"
 alias codevi="NVIM_APPNAME=vscode_neovim nvim"
@@ -245,3 +245,23 @@ _fzf_compgen_dir() {
 
 # java home
 export JAVA_HOME="/usr/lib/jvm/default-java/"
+
+# manually setup conda when necessary
+conda_setup() {
+    # >>> conda initialize >>>
+    # !! Contents within this block are managed by 'conda init' !!
+    __conda_setup="$('/home/shixinchai/miniconda3/bin/conda' 'shell.bash' 'hook' 2>/dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/home/shixinchai/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "/home/shixinchai/miniconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/home/shixinchai/miniconda3/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
+    # <<< conda initialize <<<
+
+    unset -f conda_setup
+}
