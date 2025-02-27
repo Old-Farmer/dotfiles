@@ -9,7 +9,8 @@ set hlsearch
 set ignorecase
 set incsearch
 set smartcase
-set timeoutlen=1000
+" set timeoutlen=5000
+set notimeout
 
 set scrolloff=8
 
@@ -22,10 +23,17 @@ set ideawrite=file
 
 " plugin set
 let g:NERDTreeMapJumpNextSibling = "<c-s-j>"
-let g:g:NERDTreeMapJumpPrevSibling = "<c-s-k>"
+let g:NERDTreeMapJumpPrevSibling = "<c-s-k>"
 let g:NERDTreeMapToggleZoom = 'z'
 let g:NERDTreeMapNewFile = 'a'
 let g:NERDTreeMapNewDir = 'A'
+
+" which key set
+let g:WhichKey_DefaultDelay = 275
+" not work, maybe work in the future?
+" currently I create some keymaps like `map <leader><esc> <nop>` to close popup window
+let g:WhichKey_ProcessUnknownMappings = "false"
+let g:WhichKey_ShowVimActions = "true"
 
 " plugin
 
@@ -35,64 +43,168 @@ set highlightedyank
 set keep-english-in-normal
 set NERDTree
 set peekaboo
-" disable which-key because it's a little bit annoying
-" set which-key
+set which-key
 
 " keymaps
 
+" built-in hack (because ideavim default not work)
+let g:WhichKeyDesc_MethodDown = "]m Method Down"
+let g:WhichKeyDesc_MethodUp = "[m Method Up"
+let g:WhichKeyDesc_gx = "gx Open URL or File Path"
+nmap ]m <Action>(MethodDown)
+nmap [m <Action>(MethodUp)
+map gx gd
+
+" ...<esc> keymaps just make which-key work ad my expect
+let g:WhichKeyDesc_cancel = "<leader><Escape>"
+map <leader><esc> <nop>
+
+let g:WhichKeyDesc_vim = "<leader>v vim"
+let g:WhichKeyDesc_vim_reload = "<leader>vr Reload VimRc"
+nmap <leader>vr :action IdeaVim.ReloadVimRc.reload<cr>:nohlsearch<cr>
+
+let g:WhichKeyDesc_vim_cancel = "<leader>v<Escape>"
+map <leader>v<esc> <nop>
+
+" esc
 nmap <esc> :nohlsearch<cr>
 
+" track action
+let g:WhichKeyDesc_vim_track = "<leader>vt Track Action Ids"
+let g:WhichKeyDesc_vim_notrack = "<leader>vT No Track Action Ids"
+nmap <leader>vt :set trackactionids<cr>
+nmap <leader>vT :set notrackactionids<cr>
+
 " tab & buffer
-map <s-h> gT
-map <s-l> gt
+let g:WhichKeyDesc_buffer = "<leader>b buffer"
+let g:WhichKeyDesc_buffer_delete = "<leader>bd Delete Buffer"
+let g:WhichKeyDesc_buffer_only = "<leader>bo Only Buffer"
+let g:WhichKeyDesc_CloseAllToTheLeft = "<leader>bl Close All Buffers To The Left"
+let g:WhichKeyDesc_CloseAllToTheRight = "<leader>br Close All Buffers To The Right"
+let g:WhichKeyDesc_PinActiveTabToggle = "<leader>bp Pin/Unpin Buffer"
+nmap <s-h> gT
+nmap <s-l> gt
  " not use tabclose, it will just close tab and leave an empty window
-map <leader>bd :bdelete<cr>
-map <leader>bo :tabonly<cr>
-map <leader>bl <Action>(CloseAllToTheLeft)
-map <leader>br <Action>(CloseAllToTheRight)
+nmap <leader>bd :bdelete<cr>
+nmap <leader>bo :tabonly<cr>
+nmap <leader>bl <Action>(CloseAllToTheLeft)
+nmap <leader>br <Action>(CloseAllToTheRight)
+nmap <leader>bp <Action>(PinActiveTabToggle)
+
+let g:WhichKeyDesc_buffer_cancel = "<leader>b<Escape>"
+map <leader>b<esc> <nop>
 
 " code
+let g:WhichKeyDesc_code = "<leader>c code"
+let g:WhichKeyDesc_ShowIntentionActions = "<leader>ca Show Intention Actions"
+let g:WhichKeyDesc_OptimizeImports = "<leader>co Optimize Imports"
+let g:WhichKeyDesc_ReformatCode = "<leader>cf Reformat Code"
+let g:WhichKeyDesc_Generate = "<leader>cg Generate"
+let g:WhichKeyDesc_GotoImplementation = "gi Go to Implementation"
+let g:WhichKeyDesc_ShowUsages = "gr Go to Reference"
+let g:WhichKeyDesc_GotoSuperMethod = "gs Goto Super Method"
+let g:WhichKeyDesc_GotoTypeDeclaration = "gy Goto T[y]pe Declaration"
+let g:WhichKeyDesc_GotoPreviousError = "[d Go to Previous Error(Diagnostic)"
+let g:WhichKeyDesc_GotoNextError = "]d Go to Next Error(Diagnostic)"
+let g:WhichKeyDesc_FileStructurePopup = "<leader>cs File Structure Popup"
+
 map <leader>ca <Action>(ShowIntentionActions)
 map <leader>co <Action>(OptimizeImports)
 map <leader>cf <Action>(ReformatCode)
+map <leader>cg <Action>(Generate)
+nmap <leader>cs <Action>(FileStructurePopup)
 " map <leader>f <leader>cf
-map gi <Action>(GotoImplementation)
-map gr <Action>(ShowUsages)
-map K <Action>(ShowHoverInfo)
-map <leader>pd <Action>(QuickImplementations)
-map [d <Action>(GotoPreviousError)
-map ]d <Action>(GotoNextError)
+nmap gi <Action>(GotoImplementation)
+" IdeaVim in IDEA default bind gd to GotoDeclaration
+" Because java does not have definition, it's just ok
+nmap gr <Action>(ShowUsages)
+nmap gs <Action>(GotoSuperMethod)
+nmap gy <Action>(GotoTypeDeclaration)
+nmap K <Action>(ShowHoverInfo)
+nmap [d <Action>(GotoPreviousError)
+nmap ]d <Action>(GotoNextError)
  " Use this wierd map to make <c-e> to close popup window
 inoremap <c-e> `<bs>
 "imap <c-e> <Action>(PopupMenu-cancel)
 
+let g:WhichKeyDesc_code_cancel = "<leader>c<Escape>"
+map <leader>c<esc> <nop>
+
+" preview
+let g:WhichKeyDesc_preview = "<leader>p preview"
+let g:WhichKeyDesc_QuickImplementations = "<leader>pi Quick Implementations"
+nmap <leader>pi <Action>(QuickImplementations)
+
+let g:WhichKeyDesc_preview_cancel = "<leader>p<Escape>"
+map <leader>p<esc> <nop>
+
 " flash
-map s <Action>(flash.search)
+nmap s <Action>(flash.search)
 
 " explorer
-map <leader>e :NERDTreeFocus<cr>
-map <leader>E :NERDTreeToggle<cr>
+let g:WhichKeyDesc_NERDTreeFocus = "<leader>e NERDTree Focus"
+let g:WhichKeyDesc_NERDTreeToggle = "<leader>E NERDTree Toggle"
+nmap <leader>e :NERDTreeFocus<cr>
+nmap <leader>E :NERDTreeToggle<cr>
 
 " structure
-map <leader>l <Action>(ActivateStructureToolWindow)
+" let g:WhichKeyDesc_ActivateStructureToolWindow = "<leader>l Activate Structure Tool Window"
+" map <leader>l <Action>(ActivateStructureToolWindow)
 
 " debug
-map <leader>db <Action>(ToggleLineBreakpoint)
+" let g:WhichKeyDesc_debug = "<leader>d debug"
+" let g:WhichKeyDesc_ToggleLineBreakpoint = "<leader>d Toggle Line Breakpoint"
+" map <leader>db <Action>(ToggleLineBreakpoint)
 
 " bookmark
-map <leader>mm <Action>(ToggleBookmarks)
-map <leader>mp <Action>(GotoPreviousBookmark)
-map <leader>mn <Action>(GotoNextBookmark)
+let g:WhichKeyDesc_bookmark = "<leader>m bookmark"
+let g:WhichKeyDesc_ToggleBookmarks = "<leader>mm Toggle Bookmarks"
+let g:WhichKeyDesc_GotoPreviousBookmark = "<leader>mp Goto Previous Bookmark "
+let g:WhichKeyDesc_GotoNextBookmark = "<leader>mp Goto Next Bookmark"
+nmap <leader>mm <Action>(ToggleBookmarks)
+nmap <leader>mp <Action>(GotoPreviousBookmark)
+nmap <leader>mn <Action>(GotoNextBookmark)
+
+let g:WhichKeyDesc_bookmark_cancel = "<leader>m<Escape>"
+map <leader>m<esc> <nop>
 
 " search
-map <leader>sf <Action>(GotoFile)
-map <leader><space> <Action>(GotoFile)
-map <leader>ss <Action>(GotoSymbol)
-map <leader>sg <Action>(FindInPath)
+let g:WhichKeyDesc_search = "<leader>s search"
+let g:WhichKeyDesc_GotoFile = "<leader>sf Goto File"
+let g:WhichKeyDesc_GotoFile2 = "<leader><Space> Goto File"
+let g:WhichKeyDesc_GotoSymbol = "<leader>ss Goto Symbol"
+let g:WhichKeyDesc_FindInPath = "<leader>sg Find In Path(grep)"
+nmap <leader>sf <Action>(GotoFile)
+nmap <leader><space> <Action>(GotoFile)
+nmap <leader>ss <Action>(GotoSymbol)
+nmap <leader>sg <Action>(FindInPath)
 
-" toggle
-map <leader>tr <Action>(ToggleRenderedDocPresentationForAll)
-map <leader>tR <Action>(ToggleRenderedDocPresentation)
+let g:WhichKeyDesc_search_cancel = "<leader>s<Escape>"
+map <leader>s<esc> <nop>
 
-" jdbc
-map <leader>je <Action>(Console.Jdbc.Execute)
+" ui
+let g:WhichKeyDesc_ui = "<leader>u ui"
+let g:WhichKeyDesc_ToggleRenderedDocPresentationForAll= "<leader>ur Toggle Rendered Doc Presentation For All"
+let g:WhichKeyDesc_ToggleRenderedDocPresentation= "<leader>uR Toggle Rendered Doc Presentation"
+nmap <leader>ur <Action>(ToggleRenderedDocPresentationForAll)
+nmap <leader>uR <Action>(ToggleRenderedDocPresentation)
+
+let g:WhichKeyDesc_ui_cancel = "<leader>u<Escape>"
+map <leader>u<esc> <nop>
+
+" run or execute
+let g:WhichKeyDesc_run = "<leader>r run/execute"
+let g:WhichKeyDesc_Console_Jdbc_Execute = "<leader>re Console Execute"
+let g:WhichKeyDesc_Console_Jdbc_Execute2 = "<leader>rs Console Execute All"
+let g:WhichKeyDesc_Console_Jdbc_ExplainPlan = "<leader>rp Console Explain Plan"
+map <leader>re <Action>(Console.Jdbc.Execute)
+" script
+map <leader>rs <Action>(Console.Jdbc.Execute.2)
+map <leader>rp <Action>(Console.Jdbc.ExplainPlan)
+
+let g:WhichKeyDesc_jdbc_cancel = "<leader>r<Escape>"
+map <leader>r<esc> <nop>
+
+" switcher
+let g:WhichKeyDesc_switcher = "<leader>i Sw[i]tcher"
+nmap <leader>i <Action>(Switcher)
