@@ -87,6 +87,8 @@ if vim.g.vscode then
   vim.keymap.set("n", "<S-L>", "<cmd>Tabnext<cr>")
   vim.keymap.set("n", "<leader>bd", "<cmd>Tabclose<cr>")
   vim.keymap.set("n", "<leader>bo", "<cmd>Tabonly<cr>")
+  vim.keymap.set("n", "<leader>bf", "<cmd>Tabfirst<cr>")
+  vim.keymap.set("n", "<leader>bl", "<cmd>Tablast<cr>")
 
   -- window
   -- vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
@@ -102,6 +104,27 @@ if vim.g.vscode then
   -- vim.keymap.set("n", "<C-J>", function()
   --   vscode.call("workbench.action.navigateDown")
   -- end)
+
+  vim.keymap.set("n", "<c-up>", function()
+      vscode.action("workbench.action.increaseViewHeight")
+    end,
+    { desc = "Increase window height" }
+  )
+  vim.keymap.set("n", "<c-down>", function()
+      vscode.action("workbench.action.decreaseViewHeight")
+    end,
+    { desc = "Decrease window height" }
+  )
+  vim.keymap.set("n", "<c-left>", function()
+      vscode.action("workbench.action.decreaseViewWidth")
+    end,
+    { desc = "Decrease window height" }
+  )
+  vim.keymap.set("n", "<c-right>", function()
+      vscode.action("workbench.action.increaseViewWidth")
+    end,
+    { desc = "Increase window height" }
+  )
 
 
   -- Search
@@ -128,14 +151,24 @@ if vim.g.vscode then
     vscode.action("editor.action.formatDocument")
   end)
   vim.keymap.set("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
-  -- vim.keymap.set({ "n", "v" }, "<leader>f", "<leader>cf", { remap = true })
+  vim.keymap.set("n", "<leader>f", function()
+    vscode.action("editor.action.formatDocument")
+  end)
+  vim.keymap.set("v", "<leader>f", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
 
   -- lsp
+  vim.cmd("nnoremap <nowait> gr gr") -- for neovim 0.11
   vim.keymap.set("n", "gD", function()
     vscode.action("editor.action.revealDeclaration")
   end)
-  vim.keymap.set("n", "gr", function()
+  vim.keymap.set("n", "grr", function()
     vscode.action("editor.action.goToReferences")
+  end)
+  vim.keymap.set("n", "gri", function()
+    vscode.action("editor.action.goToImplementation")
+  end)
+  vim.keymap.set("n", "grn", function()
+    vscode.action("editor.action.rename")
   end)
   vim.keymap.set("n", "gy", function()
     vscode.action("editor.action.goToTypeDefinition")
@@ -149,16 +182,19 @@ if vim.g.vscode then
   vim.keymap.set("n", "<leader>py", function()
     vscode.action("editor.action.peekTypeDefinition")
   end)
-  vim.keymap.set("n", "<leader>ca", function()
+  vim.keymap.set({ "n", "v" }, "gra", function()
     vscode.action("editor.action.quickFix")
+  end)
+  vim.keymap.set("n", "gO", function()
+    vscode.action("outline.focus")
   end)
 
   -- problem
   vim.keymap.set("n", "]d", function()
-    vscode.action("editor.action.marker.nextInFiles")
+    vscode.action("editor.action.marker.next")
   end)
   vim.keymap.set("n", "[d", function()
-    vscode.action("editor.action.marker.prevInFiles")
+    vscode.action("editor.action.marker.prev")
   end)
   vim.keymap.set("n", "<leader>xx", function()
     vscode.action("workbench.actions.view.problems")
@@ -256,10 +292,10 @@ if vim.g.vscode then
   -- end)
 
   -- run
-  vim.keymap.set({"n", "v", "o"}, "<leader>re", function()
+  vim.keymap.set({ "n", "v", "o" }, "<leader>re", function()
     vscode.action("mysql.runSQL")
   end)
-  vim.keymap.set({"n", "v", "o"}, "<leader>rs", function()
+  vim.keymap.set({ "n", "v", "o" }, "<leader>rs", function()
     vscode.action("mysql.runAllQuery")
   end)
 

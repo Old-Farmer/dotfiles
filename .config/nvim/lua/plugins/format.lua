@@ -12,6 +12,14 @@ return {
         mode = "",
         desc = "Format",
       },
+      {
+        "<leader>f",
+        function()
+          require("conform").format({ async = true, lsp_fallback = true })
+        end,
+        mode = "",
+        desc = "Format",
+      },
     },
     init = function()
       vim.opt.formatexpr = "v:lua.require'conform'.formatexpr()"

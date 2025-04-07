@@ -9,13 +9,11 @@ return {
       keymaps = {
         { "gd", "<cmd>Telescope lsp_definitions<cr>", desc = "Goto definition" },
         { "gD", vim.lsp.buf.declaration, desc = "Goto declaration" },
-        { "gr", "<cmd>Telescope lsp_references<cr>", desc = "Goto references" },
-        { "gI", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto implementation" },
+        { "grr", "<cmd>Telescope lsp_references<cr>", desc = "Goto references" },
+        { "gri", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto implementation" },
         { "gy", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto t[y]pe definition" },
         { "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Search document symbols" },
         { "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Search workspace symbols" },
-        { "<leader>cr", vim.lsp.buf.rename, desc = "Rename" },
-        { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
         toggle_inlay_hints = {
           "<leader>uh",
           function()
@@ -212,7 +210,9 @@ return {
   {
     -- Ref LazyVim mason config
     "williamboman/mason.nvim",
-    cmd = "Mason",
+    -- mason.nvim is optimized to load as little as possible during setup.
+    -- Lazy-loading the plugin, or somehow deferring the setup, is not recommended.
+    lazy = false,
     opts = {
       ensure_installed = {
         "stylua",

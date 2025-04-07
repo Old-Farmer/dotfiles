@@ -13,7 +13,6 @@ return {
           -- end,
         },
         { "<leader>c", group = "+code" },
-        { "<leader>f", group = "+file" },
         { "<leader>g", group = "+git" },
         { "<leader>q", group = "+quit/session" },
         { "<leader>s", group = "+search" },
@@ -28,7 +27,6 @@ return {
         { "<leader>t", group = "+terminal" },
         { "<leader>u", group = "+ui" },
         { "<leader>x", group = "+diagnostic" },
-        { "<leader><tab>", group = "+tab" },
       },
       triggers = {
         { "<auto>", mode = "nxso" },
@@ -155,10 +153,12 @@ return {
       { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
       { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete buffers to the right" },
       { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete buffers to the left" },
-      { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
       { "<s-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
       { "<s-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
-      { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
+      { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev buffer" },
+      { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
+      { "<leader>bM", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
+      { "<leader>bm", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
     },
     opts = {
       -- catppuccin integration

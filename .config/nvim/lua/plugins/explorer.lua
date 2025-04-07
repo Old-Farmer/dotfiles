@@ -8,13 +8,13 @@ return {
         "<cmd>NvimTreeToggle<cr>",
         desc = "Explorer toggle",
       },
-      {
-        "<leader>fe",
-        function()
-          require("nvim-tree.api").tree.toggle({ path = vim.uv.cwd() })
-        end,
-        desc = "Explorer toggle (cwd)",
-      },
+      -- {
+      --   "<leader>e",
+      --   function()
+      --     require("nvim-tree.api").tree.toggle({ path = vim.uv.cwd() })
+      --   end,
+      --   desc = "Explorer toggle (cwd)",
+      -- },
     },
     opts = function()
       local diagnostic_icons = vim.diagnostic.config().signs.text
@@ -51,7 +51,7 @@ return {
           },
         },
         -- respect_buf_cwd = true,
-        -- sync_root_with_cwd = true,
+        sync_root_with_cwd = true,
         update_focused_file = {
           enable = true,
           -- update_root = true,

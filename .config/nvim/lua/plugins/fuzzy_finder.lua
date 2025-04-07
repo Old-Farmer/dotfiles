@@ -9,7 +9,7 @@ return {
     },
     keys = {
       { "<leader>sa", "<cmd>Telescope autocmds<cr>", desc = "Search autocmds" },
-      { "<leader>`", "<cmd>Telescope buffers<cr>", desc = "Search buffers" },
+      { "<leader>,", "<cmd>Telescope buffers<cr>", desc = "Search buffers" },
       { "<leader>sb", "<cmd>Telescope buffers<cr>", desc = "Search buffers" },
       { "<leader>sB", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in the current buffer" },
       {
