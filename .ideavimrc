@@ -96,30 +96,31 @@ map <leader>b<esc> <nop>
 
 " code
 let g:WhichKeyDesc_code = "<leader>c code"
-let g:WhichKeyDesc_ShowIntentionActions = "<leader>ca Show Intention Actions"
+let g:WhichKeyDesc_ShowIntentionActions = "gra Show Intention Actions"
 let g:WhichKeyDesc_OptimizeImports = "<leader>co Optimize Imports"
 let g:WhichKeyDesc_ReformatCode = "<leader>cf Reformat Code"
+let g:WhichKeyDesc_ReformatCode = "<leader>f Reformat Code"
 let g:WhichKeyDesc_Generate = "<leader>cg Generate"
-let g:WhichKeyDesc_GotoImplementation = "gi Go to Implementation"
-let g:WhichKeyDesc_ShowUsages = "gr Go to Reference"
+let g:WhichKeyDesc_GotoImplementation = "gri Go to Implementation"
+let g:WhichKeyDesc_ShowUsages = "grr Go to Reference"
 let g:WhichKeyDesc_GotoSuperMethod = "gs Goto Super Method"
-let g:WhichKeyDesc_GotoTypeDeclaration = "gy Goto T[y]pe Declaration"
+let g:WhichKeyDesc_GotoTypeDeclaration = "grt Goto T[y]pe Declaration"
 let g:WhichKeyDesc_GotoPreviousError = "[d Go to Previous Error(Diagnostic)"
 let g:WhichKeyDesc_GotoNextError = "]d Go to Next Error(Diagnostic)"
 let g:WhichKeyDesc_FileStructurePopup = "<leader>cs File Structure Popup"
 
-map <leader>ca <Action>(ShowIntentionActions)
+map gra <Action>(ShowIntentionActions)
 map <leader>co <Action>(OptimizeImports)
 map <leader>cf <Action>(ReformatCode)
+map <leader>f <Action>(ReformatCode)
 map <leader>cg <Action>(Generate)
-nmap <leader>cs <Action>(FileStructurePopup)
-" map <leader>f <leader>cf
-nmap gi <Action>(GotoImplementation)
+nmap gO <Action>(FileStructurePopup)
+nmap gri <Action>(GotoImplementation)
 " IdeaVim in IDEA default bind gd to GotoDeclaration
 " Because java does not have definition, it's just ok
-nmap gr <Action>(ShowUsages)
+nmap grr <Action>(ShowUsages)
 nmap gs <Action>(GotoSuperMethod)
-nmap gy <Action>(GotoTypeDeclaration)
+nmap grt <Action>(GotoTypeDeclaration)
 nmap K <Action>(ShowHoverInfo)
 nmap [d <Action>(GotoPreviousError)
 nmap ]d <Action>(GotoNextError)
@@ -172,11 +173,11 @@ map <leader>m<esc> <nop>
 let g:WhichKeyDesc_search = "<leader>s search"
 let g:WhichKeyDesc_GotoFile = "<leader>sf Goto File"
 let g:WhichKeyDesc_GotoFile2 = "<leader><Space> Goto File"
-let g:WhichKeyDesc_GotoSymbol = "<leader>ss Goto Symbol"
+let g:WhichKeyDesc_GotoSymbol = "<leader>so Goto Symbol"
 let g:WhichKeyDesc_FindInPath = "<leader>sg Find In Path(grep)"
 nmap <leader>sf <Action>(GotoFile)
 nmap <leader><space> <Action>(GotoFile)
-nmap <leader>ss <Action>(GotoSymbol)
+nmap <leader>so <Action>(GotoSymbol)
 nmap <leader>sg <Action>(FindInPath)
 
 let g:WhichKeyDesc_search_cancel = "<leader>s<Escape>"

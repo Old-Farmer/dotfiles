@@ -45,6 +45,7 @@ return {
       { "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Search keymaps" },
       { "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Search marks" },
       { "<leader>sM", "<cmd>Telescope man_pages<cr>", desc = "Search man pages" },
+      { "<leader>so", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Search symbols" },
       { "<leader>sr", "<cmd>Telescope registers<cr>", desc = "Search registers" },
     },
     opts = {

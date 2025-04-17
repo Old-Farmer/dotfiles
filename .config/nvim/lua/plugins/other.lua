@@ -39,9 +39,9 @@ return {
         desc = "Buffer Diagnostics (Trouble)",
       },
       {
-        "<leader>cs",
+        "gO",
         "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
+        desc = "Document Symbols (Trouble)",
       },
       {
         "<leader>cl",

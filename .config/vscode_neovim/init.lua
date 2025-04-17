@@ -1,14 +1,16 @@
 if vim.g.vscode then
   -- options
-  vim.g.mapleader = " "      -- Make sure to set `mapleader` before lazy so your mappings are correct
+  vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
   vim.g.maplocalleader = " " -- Same for `maplocalleader`
   vim.opt.clipboard = "unnamedplus"
   vim.opt.ignorecase = true
   vim.opt.smartcase = true
+  vim.opt.timeoutlen = 2000
   vim.opt.updatetime = 250
   vim.opt.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
 
   local vscode = require("vscode")
+  local map = vim.keymap.set
 
   -- keymaps
 
@@ -16,192 +18,179 @@ if vim.g.vscode then
   -- see
   -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
   -- for why using remap = true
-  vim.keymap.set(
-    { "n", "x" },
-    "j",
-    "v:count == 0 ? 'gj' : 'j'",
-    { desc = "Down", expr = true, silent = true, remap = true }
-  )
-  vim.keymap.set(
-    { "n", "x" },
-    "<Down>",
-    "v:count == 0 ? 'gj' : 'j'",
-    { desc = "Down", expr = true, silent = true, remap = true }
-  )
-  vim.keymap.set(
-    { "n", "x" },
-    "k",
-    "v:count == 0 ? 'gk' : 'k'",
-    { desc = "Up", expr = true, silent = true, remap = true }
-  )
-  vim.keymap.set(
-    { "n", "x" },
-    "<Up>",
-    "v:count == 0 ? 'gk' : 'k'",
-    { desc = "Up", expr = true, silent = true, remap = true }
-  )
+  map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true, remap = true })
+  map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true, remap = true })
+  map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true, remap = true })
+  map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true, remap = true })
 
   -- for folding issue see
   -- https://github.com/vscode-neovim/vscode-neovim/issues/58
 
   -- fold, only work in normal mode
   -- only open folders when jump into folded code snippets
-  vim.keymap.set("n", "zM", function()
+  map("n", "zM", function()
     vscode.action("editor.foldAll")
   end)
-  vim.keymap.set("n", "zR", function()
+  map("n", "zR", function()
     vscode.action("editor.unfoldAll")
   end)
-  vim.keymap.set("n", "zc", function()
+  map("n", "zc", function()
     vscode.action("editor.fold")
   end)
-  vim.keymap.set("n", "zC", function()
+  map("n", "zC", function()
     vscode.action("editor.foldRecursively")
   end)
-  vim.keymap.set("n", "zo", function()
+  map("n", "zo", function()
     vscode.action("editor.unfold")
   end)
-  vim.keymap.set("n", "zO", function()
+  map("n", "zO", function()
     vscode.action("editor.unfoldRecursively")
   end)
-  vim.keymap.set("n", "za", function()
+  map("n", "za", function()
     vscode.action("editor.toggleFold")
   end)
 
-  -- also this, TODO: rewrite it to lua
-  vim.cmd([[
-  nnoremap <silent> z1 <Cmd>call VSCodeNotify('editor.foldLevel1')<CR>
-  nnoremap <silent> z2 <Cmd>call VSCodeNotify('editor.foldLevel2')<CR>
-  nnoremap <silent> z3 <Cmd>call VSCodeNotify('editor.foldLevel3')<CR>
-  nnoremap <silent> z4 <Cmd>call VSCodeNotify('editor.foldLevel4')<CR>
-  nnoremap <silent> z5 <Cmd>call VSCodeNotify('editor.foldLevel5')<CR>
-  nnoremap <silent> z6 <Cmd>call VSCodeNotify('editor.foldLevel6')<CR>
-  nnoremap <silent> z7 <Cmd>call VSCodeNotify('editor.foldLevel7')<CR>
-  ]])
+  -- also this
+  map("n", "z1", function()
+    vscode.action("editor.foldLevel1")
+  end)
+  map("n", "z2", function()
+    vscode.action("editor.foldLevel2")
+  end)
+  map("n", "z3", function()
+    vscode.action("editor.foldLevel3")
+  end)
+  map("n", "z4", function()
+    vscode.action("editor.foldLevel4")
+  end)
+  map("n", "z5", function()
+    vscode.action("editor.foldLevel5")
+  end)
+  map("n", "z6", function()
+    vscode.action("editor.foldLevel6")
+  end)
+  map("n", "z7", function()
+    vscode.action("editor.foldLevel7")
+  end)
 
   -- Clear search with <esc>
-  vim.keymap.set("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "Clear hlsearch" })
+  map("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "Clear hlsearch" })
+
+  -- Save
+  map("n", "<c-s>", "<cmd>write<cr>", { desc = "Save file" })
 
   -- vscode tab
-  vim.keymap.set("n", "<S-H>", "<cmd>Tabprevious<cr>")
-  vim.keymap.set("n", "<S-L>", "<cmd>Tabnext<cr>")
-  vim.keymap.set("n", "<leader>bd", "<cmd>Tabclose<cr>")
-  vim.keymap.set("n", "<leader>bo", "<cmd>Tabonly<cr>")
-  vim.keymap.set("n", "<leader>bf", "<cmd>Tabfirst<cr>")
-  vim.keymap.set("n", "<leader>bl", "<cmd>Tablast<cr>")
+  map("n", "<S-H>", "<cmd>Tabprevious<cr>")
+  map("n", "<S-L>", "<cmd>Tabnext<cr>")
+  map("n", "<leader>bd", "<cmd>Tabclose<cr>")
+  map("n", "<leader>bo", "<cmd>Tabonly<cr>")
+  map("n", "<leader>bf", "<cmd>Tabfirst<cr>")
+  map("n", "<leader>bl", "<cmd>Tablast<cr>")
 
   -- window
-  -- vim.keymap.set("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
-  -- vim.keymap.set("n", "<C-H>", function()
+  -- map("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
+  -- map("n", "<C-H>", function()
   --   vscode.call("workbench.action.navigateLeft")
   -- end)
-  -- vim.keymap.set("n", "<C-L>", function()
+  -- map("n", "<C-L>", function()
   --   vscode.call("workbench.action.navigateRight")
   -- end)
-  -- vim.keymap.set("n", "<C-K>", function()
+  -- map("n", "<C-K>", function()
   --   vscode.call("workbench.action.navigateUp")
   -- end)
-  -- vim.keymap.set("n", "<C-J>", function()
+  -- map("n", "<C-J>", function()
   --   vscode.call("workbench.action.navigateDown")
   -- end)
 
-  vim.keymap.set("n", "<c-up>", function()
-      vscode.action("workbench.action.increaseViewHeight")
-    end,
-    { desc = "Increase window height" }
-  )
-  vim.keymap.set("n", "<c-down>", function()
-      vscode.action("workbench.action.decreaseViewHeight")
-    end,
-    { desc = "Decrease window height" }
-  )
-  vim.keymap.set("n", "<c-left>", function()
-      vscode.action("workbench.action.decreaseViewWidth")
-    end,
-    { desc = "Decrease window height" }
-  )
-  vim.keymap.set("n", "<c-right>", function()
-      vscode.action("workbench.action.increaseViewWidth")
-    end,
-    { desc = "Increase window height" }
-  )
-
+  map("n", "<c-up>", function()
+    vscode.action("workbench.action.increaseViewHeight")
+  end, { desc = "Increase window height" })
+  map("n", "<c-down>", function()
+    vscode.action("workbench.action.decreaseViewHeight")
+  end, { desc = "Decrease window height" })
+  map("n", "<c-left>", function()
+    vscode.action("workbench.action.decreaseViewWidth")
+  end, { desc = "Decrease window height" })
+  map("n", "<c-right>", function()
+    vscode.action("workbench.action.increaseViewWidth")
+  end, { desc = "Increase window height" })
 
   -- Search
-  vim.keymap.set("n", "<leader>sf", function()
+  map("n", "<leader><space>", function()
     vscode.action("workbench.action.quickOpen")
   end)
-  vim.keymap.set("n", "<leader><space>", function()
+  map("n", "<leader>sa", function()
+    vscode.action("workbench.action.showAllSymbols")
+  end)
+  map("n", "<leader>sf", function()
     vscode.action("workbench.action.quickOpen")
   end)
   -- workbench.action.findInFiles
-  vim.keymap.set("n", "<leader>sg", function()
+  map("n", "<leader>sg", function()
     vscode.action("workbench.action.findInFiles")
   end)
-  vim.keymap.set("n", "<leader>ss", function()
+  map("n", "<leader>so", function()
     vscode.action("workbench.action.gotoSymbol")
   end)
-  vim.keymap.set("n", "<leader>sa", function()
-    vscode.action("workbench.action.showAllSymbols")
-  end)
-
 
   -- format
-  vim.keymap.set("n", "<leader>cf", function()
+  map("n", "<leader>cf", function()
     vscode.action("editor.action.formatDocument")
   end)
-  vim.keymap.set("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
-  vim.keymap.set("n", "<leader>f", function()
+  map("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
+  map("n", "<leader>f", function()
     vscode.action("editor.action.formatDocument")
   end)
-  vim.keymap.set("v", "<leader>f", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
+  map("v", "<leader>f", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
 
   -- lsp
-  vim.cmd("nnoremap <nowait> gr gr") -- for neovim 0.11
-  vim.keymap.set("n", "gD", function()
+  map("n", "gD", function()
     vscode.action("editor.action.revealDeclaration")
   end)
-  vim.keymap.set("n", "grr", function()
+  map("n", "grr", function()
     vscode.action("editor.action.goToReferences")
   end)
-  vim.keymap.set("n", "gri", function()
+  map("n", "gri", function()
     vscode.action("editor.action.goToImplementation")
   end)
-  vim.keymap.set("n", "grn", function()
+  map("n", "grn", function()
     vscode.action("editor.action.rename")
   end)
-  vim.keymap.set("n", "gy", function()
+  map("n", "grt", function()
     vscode.action("editor.action.goToTypeDefinition")
   end)
-  vim.keymap.set("n", "<leader>pd", function()
+  map("n", "<leader>pd", function()
     vscode.action("editor.action.peekDefinition")
   end)
-  vim.keymap.set("n", "<leader>pD", function()
+  map("n", "<leader>pD", function()
     vscode.action("editor.action.peekDeclaration")
   end)
-  vim.keymap.set("n", "<leader>py", function()
+  map("n", "<leader>pi", function()
+    vscode.action("editor.action.peekImplementation")
+  end)
+  map("n", "<leader>py", function()
     vscode.action("editor.action.peekTypeDefinition")
   end)
-  vim.keymap.set({ "n", "v" }, "gra", function()
+  map({ "n", "v" }, "gra", function()
     vscode.action("editor.action.quickFix")
   end)
-  vim.keymap.set("n", "gO", function()
+  map("n", "gO", function()
     vscode.action("outline.focus")
   end)
 
   -- problem
-  vim.keymap.set("n", "]d", function()
+  map("n", "]d", function()
     vscode.action("editor.action.marker.next")
   end)
-  vim.keymap.set("n", "[d", function()
+  map("n", "[d", function()
     vscode.action("editor.action.marker.prev")
   end)
-  vim.keymap.set("n", "<leader>xx", function()
+  map("n", "<leader>xx", function()
     vscode.action("workbench.actions.view.problems")
   end)
 
   -- -- open outline
-  -- vim.keymap.set("n", "<leader>cs", function()
+  -- map("n", "<leader>cs", function()
   --   vscode.call("workbench.action.toggleAuxiliaryBar")
   --   -- local a = vscode.eval("return vscode.workspace.activeTextEditor")
   --   -- print(a)
@@ -215,36 +204,39 @@ if vim.g.vscode then
   -- end)
 
   -- explorer
-  vim.keymap.set("n", "<leader>e", function()
+  map("n", "<leader>e", function()
     vscode.action("workbench.view.explorer")
   end)
 
-  -- side ba[r]
+  -- side bar
   -- primary
-  vim.keymap.set("n", "<leader>h", function()
+  map("n", "<leader>h", function()
     vscode.action("workbench.action.toggleSidebarVisibility")
   end)
   -- secondary
-  vim.keymap.set("n", "<leader>l", function()
+  map("n", "<leader>l", function()
     vscode.action("workbench.action.toggleAuxiliaryBar")
   end)
   -- pane
-  vim.keymap.set("n", "<leader>j", function()
+  map("n", "<leader>j", function()
     vscode.action("workbench.action.togglePanel")
   end)
 
   -- clangd
-  vim.keymap.set("n", "<leader>ch", function()
+  map("n", "<leader>ch", function()
     vscode.action("clangd.switchheadersource")
+  end)
+  map("n", "<leader>ct", function()
+    vscode.action("clangd.typeHierarchy")
   end)
 
   -- java
-  vim.keymap.set("n", "<leader>co", function()
+  map("n", "<leader>co", function()
     vscode.action("editor.action.organizeImports")
   end)
 
   -- markdown
-  vim.keymap.set("n", "<leader>cp", function()
+  map("n", "<leader>cp", function()
     vscode.action("markdown.showPreviewToSide")
   end)
 
@@ -252,64 +244,64 @@ if vim.g.vscode then
   vim.keymap.del("n", "gf")
 
   -- bookmark
-  vim.keymap.set("n", "<leader>mm", function()
+  map("n", "<leader>mm", function()
     vscode.action("bookmarks.toggle")
   end)
-  vim.keymap.set("n", "<leader>mp", function()
+  map("n", "<leader>mp", function()
     vscode.action("bookmarks.jumpToNext")
   end)
-  vim.keymap.set("n", "<leader>mn", function()
+  map("n", "<leader>mn", function()
     vscode.action("bookmarks.jumpToPrevious")
   end)
 
   -- -- debug
-  -- vim.keymap.set("n", "<leader>dd", function()
+  -- map("n", "<leader>dd", function()
   --   vscode.action("workbench.action.debug.start")
   -- end)
-  -- vim.keymap.set("n", "<leader>ds", function()
+  -- map("n", "<leader>ds", function()
   --   vscode.action("workbench.action.debug.stop")
   -- end)
-  -- vim.keymap.set("n", "<leader>dr", function()
+  -- map("n", "<leader>dr", function()
   --   vscode.action("workbench.action.debug.restart")
   -- end)
-  -- vim.keymap.set("n", "<leader>dc", function()
+  -- map("n", "<leader>dc", function()
   --   vscode.action("workbench.action.debug.continue")
   -- end)
-  -- vim.keymap.set("n", "<leader>dk", function()
+  -- map("n", "<leader>dk", function()
   --   vscode.action("editor.debug.action.showDebugHover")
   -- end)
-  -- vim.keymap.set("n", "<leader>db", function()
+  -- map("n", "<leader>db", function()
   --   vscode.action("editor.debug.action.toggleBreakpoint")
   -- end)
-  -- vim.keymap.set("n", "<leader>do", function()
+  -- map("n", "<leader>do", function()
   --   vscode.action("workbench.action.debug.stepOver")
   -- end)
-  -- vim.keymap.set("n", "<leader>du", function()
+  -- map("n", "<leader>du", function()
   --   vscode.action("workbench.action.debug.stepOut")
   -- end)
-  -- vim.keymap.set("n", "<leader>di", function()
+  -- map("n", "<leader>di", function()
   --   vscode.action("workbench.action.debug.stepInto")
   -- end)
 
   -- run
-  vim.keymap.set({ "n", "v", "o" }, "<leader>re", function()
+  map({ "n", "v", "o" }, "<leader>re", function()
     vscode.action("mysql.runSQL")
   end)
-  vim.keymap.set({ "n", "v", "o" }, "<leader>rs", function()
+  map({ "n", "v", "o" }, "<leader>rs", function()
     vscode.action("mysql.runAllQuery")
   end)
 
   -- Don't use this because I have found some bugs when using them
   -- e.g. wrong cursor position
   -- -- see https://github.com/vscode-neovim/vscode-neovim/issues/2288
-  -- vim.keymap.set('n', 'o', function()
+  -- map('n', 'o', function()
   --   vscode.action('editor.action.insertLineAfter', {
   --     callback = function()
   --       vim.cmd.startinsert({ bang = true })
   --     end,
   --   })
   -- end)
-  -- vim.keymap.set('n', 'O', function()
+  -- map('n', 'O', function()
   --   vscode.action('editor.action.insertLineBefore', {
   --     callback = function()
   --       vim.cmd.startinsert({ bang = true })
@@ -325,7 +317,7 @@ if vim.g.vscode then
   })
   vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
-      vim.highlight.on_yank({ higroup = "Search" })
+      vim.hl.on_yank({ higroup = "Search" })
     end,
     desc = "highlight when yanking",
   })
@@ -341,7 +333,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out,                            "WarningMsg" },
+      { out, "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -623,6 +615,9 @@ require("lazy").setup({
           default_im = "1",
           get_im_cmd = "fcitx5-remote",
           switch_im_cmd = "fcitx5-remote -t",
+        },
+        mode = {
+          terminal = false,
         },
       },
     },

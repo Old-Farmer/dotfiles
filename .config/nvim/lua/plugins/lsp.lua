@@ -11,7 +11,7 @@ return {
         { "gD", vim.lsp.buf.declaration, desc = "Goto declaration" },
         { "grr", "<cmd>Telescope lsp_references<cr>", desc = "Goto references" },
         { "gri", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto implementation" },
-        { "gy", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto t[y]pe definition" },
+        { "grt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto t[y]pe definition" },
         { "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Search document symbols" },
         { "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Search workspace symbols" },
         toggle_inlay_hints = {

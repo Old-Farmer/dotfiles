@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import sys
+import requests
+from bs4 import BeautifulSoup
+
+def get_title(url):
+    # 发送GET请求获取网页内容
+    response = requests.get(url)
+    # 使用Beautiful Soup解析网页内容
+    soup = BeautifulSoup(response.text, 'html.parser')
+    # 查找并获取网页标题
+    try:
+        title = soup.title.string
+    except :
+        title = ""
+    return title
+
+# 获取命令行参数中的第一个参数作为网址
+if len(sys.argv) > 1:
+    url = sys.argv[1]
+    # 调用函数获取标题
+    title = get_title(url)
+    print(title)
+else:
+    print("请提供网址作为命令行参数")

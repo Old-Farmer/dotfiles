@@ -228,7 +228,8 @@ fnm-reinstall-packages-from() {
 }
 
 # fzf
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# see apt show fzf
+source /usr/share/doc/fzf/examples/key-bindings.bash
 export FZF_DEFAULT_COMMAND='fd --type f --color=always --exclude .git'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='--border --info=inline'
