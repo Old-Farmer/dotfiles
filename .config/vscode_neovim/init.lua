@@ -77,7 +77,7 @@ if vim.g.vscode then
   map("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "Clear hlsearch" })
 
   -- Save
-  map("n", "<c-s>", "<cmd>write<cr>", { desc = "Save file" })
+  map("n", "<leader>w", "<cmd>write<cr><esc>", { desc = "Save file" })
 
   -- vscode tab
   map("n", "<S-H>", "<cmd>Tabprevious<cr>")

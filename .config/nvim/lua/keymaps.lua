@@ -24,7 +24,7 @@ end, { desc = "Up", expr = true, silent = true })
 map("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "No highlight search" })
 
 -- Save file
-map({ "x", "n" }, "<c-s>", "<cmd>write<cr><esc>", { desc = "Save file" })
+map("n", "<leader>w", "<cmd>write<cr><esc>", { desc = "Save file" })
 
 -- Navigate through windows
 map("n", "<c-h>", "<c-w>h", { desc = "Go to the left window" })
@@ -38,8 +38,8 @@ map("n", "<c-down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 map("n", "<c-left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 map("n", "<c-right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
--- prefer <leader>w than <c-w>
-map("n", "<leader>w", "<c-w>", { desc = "windows", remap = true })
+-- -- prefer <leader>w than <c-w>
+-- map("n", "<leader>w", "<c-w>", { desc = "windows", remap = true })
 
 -- Exit terminal mode
 map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Exit terminal mode" })

@@ -16,14 +16,14 @@ return {
         { "<leader>g", group = "+git" },
         { "<leader>q", group = "+quit/session" },
         { "<leader>s", group = "+search" },
-        {
-          "<leader>w",
-          group = "+window",
-          proxy = "<c-w>",
-          -- expand = function()
-          -- 	return require("which-key.extras").expand.win()
-          -- end,
-        },
+        -- {
+        --   "<leader>w",
+        --   group = "+window",
+        --   proxy = "<c-w>",
+        --   -- expand = function()
+        --   -- 	return require("which-key.extras").expand.win()
+        --   -- end,
+        -- },
         { "<leader>t", group = "+terminal" },
         { "<leader>u", group = "+ui" },
         { "<leader>x", group = "+diagnostic" },
