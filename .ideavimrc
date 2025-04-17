@@ -69,6 +69,12 @@ map <leader>v<esc> <nop>
 " esc
 nmap <esc> :nohlsearch<cr>
 
+let g:WhichKeyDesc_save_cancel = "<leader>w<Escape>"
+map <leader>w<esc> <nop>
+
+let g:WhichKeyDesc_save = "<leader>w Save file"
+map <leader>w <cmd>write<cr><esc>
+
 " track action
 let g:WhichKeyDesc_vim_track = "<leader>vt Track Action Ids"
 let g:WhichKeyDesc_vim_notrack = "<leader>vT No Track Action Ids"
