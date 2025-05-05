@@ -8,7 +8,6 @@ EnumerateSkipFirst=False
 
 [Hotkey/TriggerKeys]
 0=Shift_L
-1=Shift_R
 
 [Hotkey/EnumerateForwardKeys]
 0=Control+Shift_L

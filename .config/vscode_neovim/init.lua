@@ -88,7 +88,6 @@ if vim.g.vscode then
   map("n", "<leader>bl", "<cmd>Tablast<cr>")
 
   -- window
-  -- map("n", "<leader>w", "<c-w>", { desc = "<leader>w good", remap = true })
   -- map("n", "<C-H>", function()
   --   vscode.call("workbench.action.navigateLeft")
   -- end)
