@@ -266,3 +266,6 @@ conda_setup() {
 
     unset -f conda_setup
 }
+
+# # Better man page viewer
+# export MANPAGER='nvim +Man!'

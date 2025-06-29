@@ -8,6 +8,7 @@ if vim.g.vscode then
   vim.opt.timeoutlen = 2000
   vim.opt.updatetime = 250
   vim.opt.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
+  vim.opt.mouse = "a"
 
   local vscode = require("vscode")
   local map = vim.keymap.set
@@ -82,6 +83,8 @@ if vim.g.vscode then
   -- vscode tab
   map("n", "<S-H>", "<cmd>Tabprevious<cr>")
   map("n", "<S-L>", "<cmd>Tabnext<cr>")
+  map("n", "[b", "<cmd>Tabprevious<cr>")
+  map("n", "]b", "<cmd>Tabnext<cr>")
   map("n", "<leader>bd", "<cmd>Tabclose<cr>")
   map("n", "<leader>bo", "<cmd>Tabonly<cr>")
   map("n", "<leader>bf", "<cmd>Tabfirst<cr>")

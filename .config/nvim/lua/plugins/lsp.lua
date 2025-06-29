@@ -2,8 +2,8 @@ return {
   {
     "neovim/nvim-lspconfig",
     -- See https://github.com/LazyVim/LazyVim/discussions/1583
-    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-    dependencies = { "williamboman/mason-lspconfig.nvim" },
+    -- See https://www.reddit.com/r/neovim/comments/1l7pz1l/starting_from_0112_i_have_a_weird_issue/
+    event = { "BufReadPre", "BufWritePre", "BufNewFile" },
     opts = {
       -- Lsp keymaps
       keymaps = {
@@ -11,7 +11,7 @@ return {
         { "gD", vim.lsp.buf.declaration, desc = "Goto declaration" },
         { "grr", "<cmd>Telescope lsp_references<cr>", desc = "Goto references" },
         { "gri", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto implementation" },
-        { "grt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto t[y]pe definition" },
+        { "grt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto type definition" },
         { "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Search document symbols" },
         { "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Search workspace symbols" },
         toggle_inlay_hints = {
@@ -178,32 +178,29 @@ return {
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+      vim.lsp.config("*", { capabilities = require("cmp_nvim_lsp").default_capabilities() })
 
       local servers = opts.servers
       local setups = opts.setups
       local ensure_installed = vim.tbl_keys(servers)
 
+      -- config
+      for server_name, server in pairs(servers) do
+        -- Skip setup server if additional setup return true
+        if setups[server_name] and setups[server_name]() then
+          return
+        end
+
+        if server.keymaps then
+          server.keymaps = nil
+        end
+        vim.lsp.config(server_name, server)
+      end
+
       -- Setup mason-lspconfig here.
       -- Means to install some language servers and setup lsp
       require("mason-lspconfig").setup({
         ensure_installed = ensure_installed, -- ensure install servers
-        handlers = {
-          function(server_name)
-            -- Skip setup server if additional setup return true
-            if setups[server_name] and setups[server_name]() then
-              return
-            end
-
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            require("lspconfig")[server_name].setup(server)
-          end,
-        },
       })
     end,
   },
@@ -244,8 +241,10 @@ return {
   },
   {
     "williamboman/mason-lspconfig.nvim",
-    dependencies = "williamboman/mason.nvim",
-    lazy = true,
+    dependencies = {
+      "mason-org/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
     -- Will call setup in nvim-lspconfig
   },
   -- Lua lsp
@@ -256,7 +255,7 @@ return {
       library = {
         -- See the configuration section for more details
         -- Load luvit types when the `vim.uv` word is found
-        { path = "luvit-meta/library", words = { "vim%.uv" } },
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
       },
     },
   },

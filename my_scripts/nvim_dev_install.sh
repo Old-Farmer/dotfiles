@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-cd ~/mine/projects/neovim
+cd ~/projects/neovim
 git pull
 
 read -p "Continue? (y/n): " response
@@ -13,4 +13,4 @@ else
 fi
 
 make CMAKE_BUILD_TYPE=RelWithDebInfo
-cd build && cpack -G DEB && sudo dpkg -i nvim-linux64.deb
+cd build && cpack -G DEB && sudo dpkg -i nvim-linux-x86_64.deb
