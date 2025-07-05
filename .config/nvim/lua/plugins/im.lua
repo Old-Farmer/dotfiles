@@ -5,9 +5,7 @@ end
 return {
   -- Input method auto switching
   "Old-Farmer/im-autoswitch.nvim",
-  -- enabled = false,
-  -- commit = "b50aa1bd5f14048b84dd7bbfe9d1fc2014057177",
-  dev = true,
+  -- dev = true,
   event = "BufEnter",
   opts = {
     cmd_os = {

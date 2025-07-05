@@ -31,5 +31,5 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   callback = function()
     vim.opt_local.wrap = true
   end,
-  desc = "Set nowrap for some ft",
+  desc = "Set wrap for some ft",
 })

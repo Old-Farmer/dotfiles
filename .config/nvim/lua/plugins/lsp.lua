@@ -133,7 +133,7 @@ return {
           -- Document highlight
           if
             opts.document_highlight.enabled
-            and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight)
+            and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight)
           then
             local highlight_augroup = vim.api.nvim_create_augroup("easynvim_lsp_highlight", { clear = false })
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
@@ -158,7 +158,7 @@ return {
           end
 
           -- Codelens
-          if opts.codelens.enabled and client.supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
+          if opts.codelens.enabled and client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
             vim.lsp.codelens.refresh()
             vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
               buffer = args.buf,
@@ -167,7 +167,7 @@ return {
           end
 
           -- Inlay hints & toggle inlay hints keymap
-          if opts.inlay_hints.enabled and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if opts.inlay_hints.enabled and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
             vim.lsp.inlay_hint.enable(true, { bufnr = 0 }) -- Enable inlay hint of the current buffer
             lsp_map(opts.keymaps.toggle_inlay_hints) -- map toggle_inlay_hints
           end
@@ -206,7 +206,7 @@ return {
   },
   {
     -- Ref LazyVim mason config
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     -- mason.nvim is optimized to load as little as possible during setup.
     -- Lazy-loading the plugin, or somehow deferring the setup, is not recommended.
     lazy = false,

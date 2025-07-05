@@ -113,14 +113,11 @@ alias apap="sudo apt autopurge"
 # alias please="sudo"
 
 # alias for neovim
-alias vic="nvim --clean"
-alias vip="NVIM_APPNAME=no_plugin nvim"
-alias vin="/usr/bin/nvim" # nightly
-alias vi="nvim"
-alias lvi="NVIM_APPNAME=lazyvim nvim"      # lazyvim
-alias ldevvi="NVIM_APPNAME=lazyvimdev vin" # nightly
-alias kickstartvi="NVIM_APPNAME=kickstart_nvim nvim"
-alias codevi="NVIM_APPNAME=vscode_neovim nvim"
+alias vi="/usr/bin/nvim" # nightly
+alias lvi="NVIM_APPNAME=lazyvimdev vi"
+alias kickstartvi="NVIM_APPNAME=kickstart_nvim vi"
+alias codevi="NVIM_APPNAME=vscode_neovim vi"
+alias kvi="NVIM_APPNAME=kiss vi"
 
 # # alias for kitty
 # if [ "$TERM" = "xterm-kitty" ]; then

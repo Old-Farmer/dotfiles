@@ -6,18 +6,10 @@ local map = vim.keymap.set
 -- Better up/down, I don't want to set <up> <down> because I never use them
 -- x means visual mode
 map({ "n", "x" }, "j", function()
-  if vim.count == 0 then
-    return "gj"
-  else
-    return "j"
-  end
+  return vim.count == 0 and "gj" or "j"
 end, { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "k", function()
-  if vim.count == 0 then
-    return "gk"
-  else
-    return "k"
-  end
+  return vim.count == 0 and "gk" or "k"
 end, { desc = "Up", expr = true, silent = true })
 
 -- Nohlsearch
@@ -26,20 +18,11 @@ map("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "No highlight search" })
 -- Save file
 map("n", "<leader>w", "<cmd>write<cr><esc>", { desc = "Save file" })
 
--- Navigate through windows
-map("n", "<c-h>", "<c-w>h", { desc = "Go to the left window" })
-map("n", "<c-l>", "<c-w>l", { desc = "Go to the right window" })
-map("n", "<c-j>", "<c-w>j", { desc = "Go to the lower window" })
-map("n", "<c-k>", "<c-w>k", { desc = "Go to the upper window" })
-
 -- Resize windows
 map("n", "<c-up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
 map("n", "<c-down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 map("n", "<c-left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 map("n", "<c-right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
-
--- -- prefer <leader>w than <c-w>
--- map("n", "<leader>w", "<c-w>", { desc = "windows", remap = true })
 
 -- Exit terminal mode
 map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Exit terminal mode" })
