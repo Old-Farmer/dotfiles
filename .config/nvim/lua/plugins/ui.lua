@@ -3,6 +3,7 @@ return {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
+      delay = 600,
       spec = {
         mode = { "n", "v" },
         {
@@ -279,5 +280,19 @@ return {
   --   "levouh/tint.nvim",
   --   event = "VeryLazy",
   --   opts = {}
+  -- },
+  -- {
+  --   "sphamba/smear-cursor.nvim",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     stiffness_insert_mode = 0.7, -- 0.5      [0, 1]
+  --     trailing_stiffness_insert_mode = 0.7, -- 0.5      [0, 1]
+  --     damping = 0.95, -- 0.85     [0, 1]
+  --     damping_insert_mode = 0.95, -- 0.9      [0, 1]
+  --     stiffness = 0.5,
+  --     trailing_stiffness = 0.5,
+  --     matrix_pixel_threshold = 0.5,
+  --     distance_stop_animating = 0.5, -- 0.1      > 0
+  --   },
   -- },
 }

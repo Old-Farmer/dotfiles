@@ -3,54 +3,56 @@ return {
   -- Quite slow for c++
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    dependencies = {
+      "mason-org/mason.nvim",
+    },
+    branch = "main",
     build = ":TSUpdate",
     lazy = false,
-    config = function()
-      -- Setup
-      ---@diagnostic disable-next-line: missing-fields
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "bash",
-          "c",
-          "diff",
-          "html",
-          "javascript",
-          "jsdoc",
-          "json",
-          "jsonc",
-          "lua",
-          "luadoc",
-          "luap",
-          "markdown",
-          "markdown_inline",
-          "printf",
-          "python",
-          "query",
-          "regex",
-          "toml",
-          "tsx",
-          "typescript",
-          "vim",
-          "vimdoc",
-          "xml",
-          "yaml",
-        },
-        sync_install = false,
-        -- Automatically install missing parsers when entering buffer
-        auto_install = false,
-        highlight = { enable = true, additional_vim_regex_highlighting = false },
-        indent = { enable = true },
-        -- Incremental selection based on the named nodes from the grammar.
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<c-space>",
-            node_incremental = "<c-space>",
-            scope_incremental = false,
-            node_decremental = "<bs>",
-          },
-        },
+    opts = {
+      ensure_installed = {
+        "awk",
+        "bash",
+        "c",
+        "diff",
+        "html",
+        "javascript",
+        "jsdoc",
+        "json",
+        "jsonc",
+        "lua",
+        "luadoc",
+        "luap",
+        "markdown",
+        "markdown_inline",
+        "printf",
+        "python",
+        "query",
+        "regex",
+        "toml",
+        "tsx",
+        "typescript",
+        "vim",
+        "vimdoc",
+        "xml",
+        "yaml",
+      },
+    },
+    config = function(_, opts)
+      local nvim_treesitter = require("nvim-treesitter")
+      nvim_treesitter.setup({
+        -- Directory to install parsers and queries to
+        install_dir = vim.fn.stdpath("data") .. "/site",
+      })
+      nvim_treesitter.install(opts.ensure_installed)
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = opts.ensure_installed,
+        callback = function()
+          vim.treesitter.start()
+          vim.wo.foldmethod = "expr"
+          vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
       })
     end,
   },

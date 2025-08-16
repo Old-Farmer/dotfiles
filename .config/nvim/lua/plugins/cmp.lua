@@ -35,8 +35,8 @@ return {
         },
 
         mapping = cmp.mapping.preset.insert({
-          ["<tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
-          ["<s-tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+          ["<c-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ["<c-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
           ["<c-d>"] = cmp.mapping.scroll_docs(-4),
           ["<c-f>"] = cmp.mapping.scroll_docs(4),
           ["<c-space>"] = cmp.mapping.complete(),

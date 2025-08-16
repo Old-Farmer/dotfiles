@@ -180,6 +180,7 @@ return {
   },
   {
     "folke/flash.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     event = "VeryLazy",
     ---@type Flash.Config
     opts = {},
@@ -227,4 +228,11 @@ return {
   --     require("telescope").load_extension("projects")
   --   end,
   -- },
+  {
+    "Old-Farmer/preview-buffer.nvim",
+    dev = true,
+    lazy = false,
+    enabled = false,
+    opts = {},
+  },
 }

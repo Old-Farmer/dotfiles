@@ -33,3 +33,11 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
   desc = "Set wrap for some ft",
 })
+
+-- Set filetype for bash
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = ".bashrc",
+  callback = function()
+    vim.bo.filetype = "bash"
+  end
+})

@@ -76,8 +76,7 @@ opt.wrap = false -- No wrap lines
 
 -- fold
 opt.foldlevel = 99
-opt.foldmethod = "expr"
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldmethod = "indent"
 
 opt.smoothscroll = true -- Scroll smoothly
 -- opt.formatoptions = "jcroql" -- Default option value, not tcqj in vim help

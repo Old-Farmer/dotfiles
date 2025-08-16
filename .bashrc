@@ -86,7 +86,6 @@ alias tarc="tar -czvf"
 alias tarx="tar -xzvf"
 alias unzip_cp936="unzip -O cp936"
 alias grep="grep --color=auto"
-alias c="clear"
 # alias htop="htop --tree"
 
 # tmux aliases defined by Shixin Chai
@@ -113,11 +112,10 @@ alias apap="sudo apt autopurge"
 # alias please="sudo"
 
 # alias for neovim
-alias vi="/usr/bin/nvim" # nightly
+alias vi="nvim"
 alias lvi="NVIM_APPNAME=lazyvimdev vi"
 alias kickstartvi="NVIM_APPNAME=kickstart_nvim vi"
 alias codevi="NVIM_APPNAME=vscode_neovim vi"
-alias kvi="NVIM_APPNAME=kiss vi"
 
 # # alias for kitty
 # if [ "$TERM" = "xterm-kitty" ]; then
@@ -226,7 +224,7 @@ fnm-reinstall-packages-from() {
 
 # fzf
 # see apt show fzf
-source /usr/share/doc/fzf/examples/key-bindings.bash
+# source /usr/share/doc/fzf/examples/key-bindings.bash
 export FZF_DEFAULT_COMMAND='fd --type f --color=always --exclude .git'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='--border --info=inline'
