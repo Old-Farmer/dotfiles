@@ -7,8 +7,7 @@ require("options")
 require("cmds")
 require("keymaps")
 require("autocmds")
-require("term-emulator")
 
 pcall(require, "gitignore_config")
 
-require("lazy_nvim")
+require("lazy-nvim")

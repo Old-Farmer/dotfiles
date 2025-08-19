@@ -364,7 +364,7 @@ require("lazy").setup({
           "jsdoc",
           "json",
           "jsonc",
-          -- "lua",
+          "lua",
           -- "luadoc",
           -- "luap",
           "markdown",
@@ -405,6 +405,7 @@ require("lazy").setup({
     },
     {
       "nvim-treesitter/nvim-treesitter-textobjects",
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
       branch = "main", -- Use main branch
       keys = {
         {
@@ -613,6 +614,7 @@ require("lazy").setup({
     },
     {
       "folke/flash.nvim",
+      dependencies = { "nvim-treesitter/nvim-treesitter" },
       event = "VeryLazy",
       ---@type Flash.Config
       opts = {},

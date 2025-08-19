@@ -202,10 +202,13 @@ return {
       require("mason-lspconfig").setup({
         ensure_installed = ensure_installed, -- ensure install servers
       })
+      -- vim.lsp.enable("clangd")
+      -- vim.lsp.enable("lua_ls")
     end,
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    lazy = false,
     dependencies = {
       "mason-org/mason.nvim",
       "neovim/nvim-lspconfig",

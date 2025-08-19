@@ -9,13 +9,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- Make '_' not a key word
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = "*",
-  command = "setlocal iskeyword-=_",
-  desc = "Set iskeyword",
-})
-
 -- Indentation for FileType
 vim.api.nvim_create_autocmd({ "FileType" }, {
   pattern = { "lua", "cmake", "markdown", "sshconfig" },
@@ -32,12 +25,4 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.opt_local.wrap = true
   end,
   desc = "Set wrap for some ft",
-})
-
--- Set filetype for bash
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = ".bashrc",
-  callback = function()
-    vim.bo.filetype = "bash"
-  end
 })

@@ -3,9 +3,6 @@ return {
   -- Quite slow for c++
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      "mason-org/mason.nvim",
-    },
     branch = "main",
     build = ":TSUpdate",
     lazy = false,
@@ -58,6 +55,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     branch = "main", -- Use main branch
     keys = {
       {
@@ -252,6 +250,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-context",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     event = "VeryLazy",
     opts = { max_lines = 3 },
   },
