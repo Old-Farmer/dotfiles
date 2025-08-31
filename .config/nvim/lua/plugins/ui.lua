@@ -163,7 +163,7 @@ return {
     },
     opts = {
       -- catppuccin integration
-      highlights = require("catppuccin.groups.integrations.bufferline").get(),
+      highlights = require("catppuccin.groups.integrations.bufferline").get_theme(),
       options = {
         close_command = function(n)
           require("bufdelete").bufdelete(n)

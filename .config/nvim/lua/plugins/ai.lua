@@ -2,8 +2,8 @@ return {
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
-    lazy = false,
-    enabled = false, -- buggy, diabled it
+    event = "BufEnter",
+    enabled = false, -- buggy, disabled it
     opts = {},
   },
   {

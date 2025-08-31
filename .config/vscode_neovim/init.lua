@@ -347,9 +347,32 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     {
+      "mason-org/mason.nvim",
+      -- mason.nvim is optimized to load as little as possible during setup.
+      -- Lazy-loading the plugin, or somehow deferring the setup, is not recommended.
+      lazy = false,
+      opts = {
+        ensure_installed = {
+          "tree-sitter-cli",
+        },
+      },
+      config = function(_, opts)
+        require("mason").setup(opts)
+        local mr = require("mason-registry")
+        mr.refresh(function()
+          for _, pkg in ipairs(opts.ensure_installed) do
+            if not mr.is_installed(pkg) then
+              vim.cmd("MasonInstall " .. pkg)
+            end
+          end
+        end)
+      end,
+    },
+    {
       "nvim-treesitter/nvim-treesitter",
+      dependencies = { "mason-org/mason.nvim" },
       build = ":TSUpdate",
-      branch = "master",
+      branch = "main",
       lazy = false,
       opts = {
         ensure_installed = {
@@ -382,25 +405,14 @@ require("lazy").setup({
           "xml",
           "yaml",
         },
-        sync_install = false,
-        -- Automatically install missing parsers when entering buffer
-        auto_install = false,
-        -- highlight = { enable = false },
-        -- indent = { enable = false },
-        -- Incremental selection based on the named nodes from the grammar.
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<c-space>",
-            node_incremental = "<c-space>",
-            scope_incremental = false,
-            node_decremental = "<bs>",
-          },
-        },
       },
       config = function(_, opts)
-        -- Setup
-        require("nvim-treesitter.configs").setup(opts)
+        local nvim_treesitter = require("nvim-treesitter")
+        nvim_treesitter.setup({
+          -- Directory to install parsers and queries to
+          install_dir = vim.fn.stdpath("data") .. "/site",
+        })
+        nvim_treesitter.install(opts.ensure_installed)
       end,
     },
     {
@@ -602,10 +614,22 @@ require("lazy").setup({
       "Old-Farmer/im-autoswitch.nvim",
       event = "BufEnter",
       opts = {
-        cmd = {
-          default_im = "1",
-          get_im_cmd = "fcitx5-remote",
-          switch_im_cmd = "fcitx5-remote -t",
+        cmd_os = {
+          linux = {
+            default_im = "keyboard-us",
+            get_im_cmd = "fcitx5-remote -n",
+            switch_im_cmd = "fcitx5-remote -s {}",
+          },
+          macos = {
+            default_im = "com.apple.keylayout.ABC",
+            get_im_cmd = "im-select",
+            switch_im_cmd = "im-select {}",
+          },
+          windows = {
+            default_im = "2052",
+            get_im_cmd = "im-select",
+            switch_im_cmd = "im-select {}",
+          },
         },
         mode = {
           terminal = false,

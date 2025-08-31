@@ -3,6 +3,7 @@ return {
   -- Quite slow for c++
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = { "mason-org/mason.nvim" },
     branch = "main",
     build = ":TSUpdate",
     lazy = false,
