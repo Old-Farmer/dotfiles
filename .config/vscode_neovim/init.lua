@@ -626,14 +626,15 @@ require("lazy").setup({
             switch_im_cmd = "im-select {}",
           },
           windows = {
-            default_im = "2052",
-            get_im_cmd = "im-select",
-            switch_im_cmd = "im-select {}",
+            default_im = "1033", -- 2052
+            get_im_cmd = "im-select.exe",
+            switch_im_cmd = "im-select.exe {}",
           },
         },
         mode = {
           terminal = false,
         },
+        check_wsl = true,
       },
     },
     {
