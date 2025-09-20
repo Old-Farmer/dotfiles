@@ -33,3 +33,7 @@ command("MixedIndent", function(opts)
     Easynvim.set_indentation("", "mixed", n)
   end
 end, { nargs = "?" })
+
+command("RemoveCR", function()
+  vim.cmd([[%s/\r$//g]])
+end, { force = true })

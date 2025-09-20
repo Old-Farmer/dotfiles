@@ -1,4 +1,9 @@
 if vim.g.vscode then
+  -- Note
+  -- Vscode Settings:
+  -- 1. try editor.editContext = false maybe fix an input chinese issue,
+  --  See https://github.com/vscode-neovim/vscode-neovim/discussions/2498
+
   -- options
   vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
   vim.g.maplocalleader = " " -- Same for `maplocalleader`
@@ -15,14 +20,27 @@ if vim.g.vscode then
 
   -- keymaps
 
-  -- better up/down, also can skip folds
-  -- see
-  -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
-  -- for why using remap = true
-  map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true, remap = true })
-  map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true, remap = true })
-  map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true, remap = true })
-  map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true, remap = true })
+  -- -- better up/down, also can skip folds
+  -- -- see
+  -- -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
+  -- -- for why using remap = true
+  -- key repeat rate must be slower than 20ms / key, then the cursor synchronization between vscode and neovim will work properly
+  map({ "n", "x" }, "j", function()
+    -- Fix some issues in windows
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local total_lines = vim.api.nvim_buf_line_count(0)
+    if row == total_lines then
+      return "<Ignore>"
+    end
+    return vim.v.count == 0 and "gj" or "j"
+  end, { desc = "Down", expr = true, silent = true, remap = true })
+  map({ "n", "x" }, "k", function()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    if row == 1 then
+      return "<Ignore>"
+    end
+    return vim.v.count == 0 and "gk" or "k"
+  end, { desc = "Up", expr = true, silent = true, remap = true })
 
   -- for folding issue see
   -- https://github.com/vscode-neovim/vscode-neovim/issues/58
@@ -104,18 +122,19 @@ if vim.g.vscode then
   --   vscode.call("workbench.action.navigateDown")
   -- end)
 
-  map("n", "<c-up>", function()
-    vscode.action("workbench.action.increaseViewHeight")
-  end, { desc = "Increase window height" })
-  map("n", "<c-down>", function()
-    vscode.action("workbench.action.decreaseViewHeight")
-  end, { desc = "Decrease window height" })
-  map("n", "<c-left>", function()
-    vscode.action("workbench.action.decreaseViewWidth")
-  end, { desc = "Decrease window height" })
-  map("n", "<c-right>", function()
-    vscode.action("workbench.action.increaseViewWidth")
-  end, { desc = "Increase window height" })
+  -- Not set this because win has some shortcut confliction
+  -- map("n", "<c-up>", function()
+  --   vscode.action("workbench.action.increaseViewHeight")
+  -- end, { desc = "Increase window height" })
+  -- map("n", "<c-down>", function()
+  --   vscode.action("workbench.action.decreaseViewHeight")
+  -- end, { desc = "Decrease window height" })
+  -- map("n", "<c-left>", function()
+  --   vscode.action("workbench.action.decreaseViewWidth")
+  -- end, { desc = "Decrease window width" })
+  -- map("n", "<c-right>", function()
+  --   vscode.action("workbench.action.increaseViewWidth")
+  -- end, { desc = "Increase window width" })
 
   -- Search
   map("n", "<leader><space>", function()
@@ -310,19 +329,32 @@ if vim.g.vscode then
   --     end,
   --   })
   -- end)
+  --
+  vim.api.nvim_create_user_command("RemoveCR", function()
+    vim.cmd([[%s/\r$//g]])
+  end, { force = true })
 
   -- autocmds
-  vim.api.nvim_create_autocmd({ "FileType" }, {
-    pattern = "*",
-    command = "setlocal iskeyword-=_",
-    desc = "set iskeyword",
-  })
+  -- vim.api.nvim_create_autocmd({ "FileType" }, {
+  --   pattern = "*",
+  --   command = "setlocal iskeyword-=_",
+  --   desc = "set iskeyword",
+  -- })
   vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
       vim.hl.on_yank({ higroup = "Search" })
     end,
     desc = "highlight when yanking",
   })
+
+  -- vim.api.nvim_create_autocmd("InsertEnter", {
+  --   callback = function()
+  --     -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("a<BS>", true, false, true), "n", false)
+  --     -- local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  --     -- vim.api.nvim_win_set_cursor(0, { row, col })
+  --     vscode.action("_ping")
+  --   end,
+  -- })
 end
 
 -- plugins
@@ -612,6 +644,7 @@ require("lazy").setup({
     },
     {
       "Old-Farmer/im-autoswitch.nvim",
+      dev = true,
       event = "BufEnter",
       opts = {
         cmd_os = {
@@ -652,6 +685,10 @@ require("lazy").setup({
         { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
       },
     },
+    -- {
+    --   "xiyaowong/fast-cursor-move.nvim",
+    --   event = "VeryLazy",
+    -- },
   },
   defaults = {
     lazy = true,

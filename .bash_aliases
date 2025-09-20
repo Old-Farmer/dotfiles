@@ -120,6 +120,7 @@ export PATH=$HOME/my_scripts:$PATH
 # some apps
 
 # go apps
+export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/go/bin/
 
 # go bash completion
@@ -182,3 +183,4 @@ conda_setup() {
 
 # # Better man page viewer
 # export MANPAGER='nvim +Man!'
+ulimit -c unlimited
