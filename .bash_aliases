@@ -1,4 +1,5 @@
 # Some usefule aliases defined by Shixin Chai
+alias ll="ls -al"
 alias rm="rm -i"
 alias tarc="tar -czvf"
 alias tarx="tar -xzvf"
@@ -30,10 +31,10 @@ alias apap="sudo apt autopurge"
 # alias please="sudo"
 
 # alias for neovim
-alias vi="nvim"
-alias lvi="NVIM_APPNAME=lazyvimdev vi"
-alias kickstartvi="NVIM_APPNAME=kickstart_nvim vi"
-alias codevi="NVIM_APPNAME=vscode_neovim vi"
+alias vi="NVIM_APPNAME=simple_nvim ~/nvim-prerelease/nvim-linux-x86_64/bin/nvim"
+alias lvi="NVIM_APPNAME=lazyvimdev nvim"
+alias kickstartvi="NVIM_APPNAME=kickstart_nvim nvim"
+alias codevi="NVIM_APPNAME=vscode_neovim nvim"
 
 # # alias for kitty
 # if [ "$TERM" = "xterm-kitty" ]; then
@@ -52,16 +53,6 @@ function bear_make() {
 
 # cmake
 export CMAKE_EXPORT_COMPILE_COMMANDS=ON # Auto generate complie_commands.json
-
-function cmake_debug() {
-    cmake -DCMAMKE_BUILD_TYPE=Debug ..
-    make -j $(nproc)
-}
-
-function cmake_release() {
-    cmake -DCMAMKE_BUILD_TYPE=Release ..
-    make -j $(nproc)
-}
 
 # git
 
@@ -184,3 +175,13 @@ conda_setup() {
 # # Better man page viewer
 # export MANPAGER='nvim +Man!'
 ulimit -c unlimited
+
+# vcpkg
+export VCPKG_ROOT=${HOME}/projects/vcpkg
+export PATH=$VCPKG_ROOT:$PATH
+source ${VCPKG_ROOT}/scripts/vcpkg_completion.bash
+export VCPKG_CMAKE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
+
+function cmake_vcpkg() {
+    cmake -DCMAKE_TOOLCHAIN_FILE=${VCPKG_CMAKE} $@
+}

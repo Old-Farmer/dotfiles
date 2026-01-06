@@ -411,6 +411,7 @@ require("lazy").setup({
           "awk",
           "bash",
           -- "c",
+          "cmake",
           "cpp",
           -- "diff",
           -- "html",

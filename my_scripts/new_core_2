@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# just for wsl2 env
+
+dir="/opt/wsl-crashes/"
+
+if [[ ! -d "$dir" ]]; then
+    echo "Error: $dir is not a valid dir"
+    exit 1
+fi
+
+# 按时间升序排序（最旧在前，最新在最后）
+# tail -2 取出最后两个文件
+# head -1 再取其中的倒数第二个（即第二新的）
+second_latest_file=$(
+    find "$dir" -type f -printf '%T@ %p\n' 2>/dev/null \
+    | sort -n \
+    | tail -2 \
+    | head -1 \
+    | cut -d' ' -f2-
+)
+
+if [[ -z "$second_latest_file" ]]; then
+    echo ""
+    exit 1
+fi
+
+echo "$second_latest_file"
+
