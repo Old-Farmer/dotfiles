@@ -1,12 +1,9 @@
 -- Neovim configs by CharlieCC
 
--- Options
 vim.cmd([=[
-
+" Options
 let mapleader = " "
 let maplocalleader = "\\"
-
-set mouse=a
 
 set clipboard=unnamedplus
 
@@ -26,12 +23,19 @@ set breakindent
 
 set list
 set signcolumn=yes
-set termguicolors
 set smoothscroll
-set winborder=shadow
 
 set cursorline
-set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait1-blinkoff600-blinkon600-Cursor/lCursor,sm:block-blinkwait1-blinkoff600-blinkon600
+set guicursor=
+\n-v-c:block,
+\i-ci-ve:ver25,
+\r-cr:hor20,
+\o:hor50,
+\a:blinkwait1-blinkoff600-blinkon600-Cursor/lCursor,
+\sm:block-blinkwait1-blinkoff600-blinkon600
+
+set noshowcmd
+set shortmess+=w
 
 set scrolloff=8
 
@@ -44,63 +48,64 @@ set confirm
 
 set foldlevel=99
 set foldmethod=indent
-]=])
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "lua",
-  callback = function()
-    vim.cmd("set tabstop=2")
-  end,
-})
+set wildoptions+=fuzzy
+set wildignorecase
+set completeopt+=fuzzy
 
--- Keymaps
-vim.cmd([=[
-
-nnoremap <expr> <silent> j v:count == 0 ? 'gj' : 'j'
-xnoremap <expr> <silent> j v:count == 0 ? 'gj' : 'j'
-nnoremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
-xnoremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
+" Keymaps
+noremap <expr> <silent> j v:count == 0 ? 'gj' : 'j'
+noremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
 
 nmap <esc> <cmd>nohlsearch<cr>
 
 nmap <leader>w <cmd>write<cr>
 
-nmap <leader>qs :mks! ~/sessions/
-nmap <leader>ql :source ~/sessions/
+nmap <leader><leader> :b<space>
+
+nmap <c-left> <cmd>vertical resize -8<cr>
+nmap <c-right> <cmd>vertical resize +8<cr>
+nmap <c-up> <cmd>resize +4<cr>
+nmap <c-down> <cmd>resize -4<cr>
+
+nmap <leader>ss :mksession! ~/sessions/
+nmap <leader>sS :exe "mksession! " .. v:this_session
+nmap <leader>sl :source ~/sessions/
+
+nmap <leader>dl <cmd>lua vim.diagnostic.setloclist()<cr>
+nmap <leader>dq <cmd>lua vim.diagnostic.setqflist()<cr>
+
+nmap gd <cmd>lua vim.lsp.buf.definition()<cr>
+nmap gD <cmd>lua vim.lsp.buf.declaration()<cr>
+
+" autocmds
+augroup ft_augroup
+  autocmd FileType lua setlocal tabstop=2
+  autocmd FileType markdown setlocal wrap
+  autocmd FileType qf nnoremap <buffer> o <enter><c-w>p
+augroup END
 ]=])
-
-vim.keymap.set("n", "<leader>xl", vim.diagnostic.setloclist, { desc = "diagnostic loclist" })
-vim.keymap.set("n", "<leader>xq", vim.diagnostic.setqflist, { desc = "diagnostic qflist" })
-
-vim.keymap.set("n", "gd", vim.lsp.buf.definition)
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration)
 
 -- Diagnostic
 -- vim.diagnostic.config({
--- 	virtual_text = {
--- 		-- source = "if_many",
--- 		prefix = "●",
--- 	},
+--   virtual_text = {
+--     -- source = "if_many",
+--     prefix = "●",
+--   },
 -- })
 
 -- Plugins
-
-local pack_changed = function(ev)
-  local name, kind = ev.data.spec.name, ev.data.kind
-
-  if name == "nvim-treesitter" and kind == "update" then
-    if not ev.data.active then
-      vim.cmd.packadd("nvim-treesitter")
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function(ev)
+    local name, kind = ev.data.spec.name, ev.data.kind
+    if name == "nvim-treesitter" and kind == "update" then
+      if not ev.data.active then
+        vim.cmd("packadd nvim-treesitter")
+      end
+      vim.cmd("TSUpdate")
     end
-    vim.cmd("TSUpdate")
-  end
-
-  if name == "telescope-fzf-native.nvim" and (kind == "install" or kind == "update") then
-    vim.system({ "make" }, { cwd = ev.data.path }):wait()
-  end
-end
-
-vim.api.nvim_create_autocmd("PackChanged", { callback = pack_changed })
+  end,
+})
 
 local function gh(path)
   return "https://github.com/" .. path
@@ -110,30 +115,35 @@ vim.pack.add({
     src = gh("saghen/blink.cmp"),
     version = vim.version.range("1.*"),
   },
-  { src = gh("catppuccin/nvim"), name = "catppuccin" },
-
   gh("stevearc/conform.nvim"),
   gh("folke/lazydev.nvim"), -- Just for lua config dev
+  gh("lewis6991/gitsigns.nvim"),
   gh("mason-org/mason.nvim"),
+  gh("windwp/nvim-autopairs"),
   gh("mfussenegger/nvim-lint"),
   gh("neovim/nvim-lspconfig"),
   gh("nvim-treesitter/nvim-treesitter"),
   gh("nvim-tree/nvim-web-devicons"), -- dependency
-  gh("stevearc/oil.nvim"),
-  gh("nvim-lua/plenary.nvim"), -- dependency
-  gh("nvim-telescope/telescope-fzf-native.nvim"),
-  gh("nvim-telescope/telescope.nvim"),
+  gh("nvim-tree/nvim-tree.lua"),
+  gh("folke/tokyonight.nvim"),
+  gh("tpope/vim-fugitive"),
 })
 
--- colorscheme
-vim.cmd("colorscheme catppuccin")
+-- UI
+require("tokyonight").setup()
+vim.cmd([[colorscheme tokyonight-night]])
 
 -- Mason
 require("mason").setup()
-vim.api.nvim_create_user_command("MasonInstallAll", function()
-  local tools = { "clangd", "tree-sitter-cli", "lua-language-server", "shfmt", "stylua", "cmake-language-server" }
-  vim.cmd("MasonInstall" .. table.concat(tools, " "))
-end, {})
+vim.cmd([[
+command MasonInstallAll
+\ clangd
+\ tree-sitter-cli
+\ lua-language-server
+\ shfmt
+\ stylua
+\ neocmakelsp
+]])
 
 -- Lsp
 local lsp_group = vim.api.nvim_create_augroup("my.lsp.config", { clear = true })
@@ -155,7 +165,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-
     if not client then
       return
     end
@@ -169,15 +178,38 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
   end,
 })
-
+-- LspProgress
+local lsp_progress = {}
 vim.api.nvim_create_autocmd("LspProgress", {
   group = lsp_group,
   callback = function(ev)
     local value = ev.data.params.value
-    if value.kind == "begin" or value.kind == "report" then
-      vim.notify("Lsp Progress: " .. vim.lsp.status())
-    elseif value.kind == "end" then
-      vim.notify("Lsp progress: Done")
+    if value.kind == "begin" then
+      local client = vim.lsp.get_client_by_id(ev.data.client_id)
+      if not client then
+        return
+      end
+      lsp_progress.client_id = {
+        kind = "progress",
+        status = "running",
+        percent = value.percentage,
+        title = string.format("LspProgress(%s[%d])", client.name, ev.data.client_id),
+      }
+      lsp_progress.client_id.id = vim.api.nvim_echo({ { value.title } }, false, lsp_progress.client_id)
+      return
+    end
+
+    if not lsp_progress.client_id then
+      return
+    end
+    if value.kind == "report" then
+      lsp_progress.client_id.percent = value.percentage
+      vim.api.nvim_echo({ { value.title } }, false, lsp_progress.client_id)
+    else
+      lsp_progress.client_id.percent = 100
+      lsp_progress.client_id.status = "success"
+      vim.api.nvim_echo({ { value.title } }, true, lsp_progress.client_id)
+      lsp_progress.client_id = nil
     end
   end,
 })
@@ -195,11 +227,38 @@ vim.lsp.config("clangd", {
     "--fallback-style=google",
   },
 })
-vim.lsp.enable({ "clangd", "lua_ls", "cmake" })
-vim.cmd("nmap <leader>ch <cmd>LspClangdSwitchSourceHeader<cr>")
+vim.cmd([[nmap <leader>ch <cmd>LspClangdSwitchSourceHeader<cr>]])
+-- lua_ls
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      runtime = { version = "LuaJIT" },
+      workspace = { checkThirdParty = false },
+      telemetry = { enable = false },
+    },
+  },
+})
+vim.lsp.enable({
+  "clangd",
+  "lua_ls",
+  "neocmake",
+})
 
 -- Treesitter
-local ts_lang = { "c", "cpp", "lua", "cmake", "vim", "vimdoc" }
+local ts_lang = {
+  "bash",
+  "c",
+  "cpp",
+  "cmake",
+  "go",
+  "java",
+  "lua",
+  "markdown",
+  "python",
+  "vim",
+  "vimdoc",
+  "rust",
+}
 require("nvim-treesitter").install(ts_lang)
 vim.api.nvim_create_autocmd("FileType", {
   pattern = ts_lang,
@@ -211,49 +270,52 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- fuzzy finder
-require("telescope").setup({
-  -- file_ignore_patterns = {
-  -- 	"build.*/",
-  -- },
-})
-require("telescope").load_extension("fzf")
-vim.cmd([[
-nmap <leader><space> <cmd>Telescope find_files<cr>
-nmap <leader>, <cmd>Telescope buffers<cr>
-]])
-
 -- file tree
-require("oil").setup({
-  keymaps = {
-    ["<leader>e"] = { "actions.close", mode = "n" },
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+require("nvim-tree").setup({
+  diagnostics = {
+    enable = true,
+    debounce_delay = 200,
+  },
+  filters = {
+    enable = false,
+  },
+  renderer = {
+    icons = { git_placement = "right_align" },
+    group_empty = true,
+    highlight_hidden = "all",
+    indent_markers = {
+      enable = true,
+    },
   },
 })
-vim.cmd([[
-nmap <leader>e <cmd>Oil<cr>
-]])
+vim.cmd([[nmap <leader>e <cmd>NvimTreeToggle<cr>]])
 
 -- cmp
 require("blink-cmp").setup({
-  cmdline = {
-    enabled = false,
-  },
+  cmdline = { enabled = false },
   keymap = {
     ["<cr>"] = { "select_and_accept", "fallback" },
-    -- ["<c-k>"] = false,
+  },
+  sources = {
+    -- Not use path because sometimes annoying
+    default = { "lsp", "snippets", "buffer" },
   },
 })
 
 -- format
-require("conform").setup({
+local conform = require("conform")
+conform.setup({
   notify_on_error = false,
   formatters_by_ft = {
     lua = { "stylua" },
     sh = { "shfmt" },
   },
 })
-
-local conform = require("conform")
-vim.keymap.set("n", "<leader>f", function()
+vim.keymap.set({ "n", "v" }, "<leader>f", function()
   conform.format({ async = true, lsp_fallback = true })
 end)
+
+-- auto-pair
+require("nvim-autopairs").setup()

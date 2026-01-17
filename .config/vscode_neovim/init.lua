@@ -7,23 +7,23 @@ if vim.g.vscode then
   -- options
   vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
   vim.g.maplocalleader = " " -- Same for `maplocalleader`
-  vim.opt.clipboard = "unnamedplus"
-  vim.opt.ignorecase = true
-  vim.opt.smartcase = true
-  vim.opt.timeoutlen = 2000
-  vim.opt.updatetime = 250
-  vim.opt.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
-  vim.opt.mouse = "a"
+  vim.o.clipboard = "unnamedplus"
+  vim.o.ignorecase = true
+  vim.o.smartcase = true
+  vim.o.timeoutlen = 2000
+  vim.o.updatetime = 250
+  vim.o.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
+  vim.o.mouse = "a"
 
   local vscode = require("vscode")
   local map = vim.keymap.set
 
   -- keymaps
 
-  -- -- better up/down, also can skip folds
-  -- -- see
-  -- -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
-  -- -- for why using remap = true
+  -- better up/down, also can skip folds
+  -- see
+  -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
+  -- for why using remap = true
   -- key repeat rate must be slower than 20ms / key, then the cursor synchronization between vscode and neovim will work properly
   map({ "n", "x" }, "j", function()
     -- Fix some issues in windows
@@ -99,6 +99,7 @@ if vim.g.vscode then
   map("n", "<leader>w", "<cmd>write<cr><esc>", { desc = "Save file" })
 
   -- vscode tab
+  -- In Vscode Neovim, buffers cmds & keymaps can't work now, so I create some.
   map("n", "<S-H>", "<cmd>Tabprevious<cr>")
   map("n", "<S-L>", "<cmd>Tabnext<cr>")
   map("n", "[b", "<cmd>Tabprevious<cr>")
@@ -144,7 +145,7 @@ if vim.g.vscode then
     vscode.action("workbench.action.showAllSymbols")
   end)
   map("n", "<leader>sf", function()
-    vscode.action("workbench.action.quickOpen")
+    vscode.action("workbench.action.files.openFile")
   end)
   -- workbench.action.findInFiles
   map("n", "<leader>sg", function()

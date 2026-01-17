@@ -4,7 +4,7 @@ alias rm="rm -i"
 alias tarc="tar -czvf"
 alias tarx="tar -xzvf"
 alias unzip_cp936="unzip -O cp936"
-alias grep="grep --color=auto"
+alias f="fg"
 # alias htop="htop --tree"
 
 # tmux aliases defined by Shixin Chai
@@ -133,7 +133,8 @@ fnm-reinstall-packages-from() {
 }
 
 # fzf
-# see apt show fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# deprecated: see apt show fzf
 # source /usr/share/doc/fzf/examples/key-bindings.bash
 export FZF_DEFAULT_COMMAND='fd --type f --color=always --exclude .git'
 # Options to fzf command

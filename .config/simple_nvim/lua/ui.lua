@@ -1,0 +1,15 @@
+  -- { src = gh("catppuccin/nvim"), name = "catppuccin" },
+
+-- ui
+-- require("catppuccin").setup({
+--   custom_highlights = function(colors)
+--     return {
+--       ["@lsp.typemod.variable.readonly"] = { link = "Constant" },
+--       ["@property"] = { fg = colors.text },
+--     }
+--   end,
+-- })
+-- vim.cmd([[
+-- colorscheme catppuccin
+-- ]])
+-- vim.g.zenbones_compat = 1

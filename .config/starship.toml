@@ -228,7 +228,8 @@ format = 'via [$symbol]($style)'
 
 [python]
 symbol = " "
-# format = 'via [$symbol]($style)'
+format = 'via [${symbol}(\($virtualenv\) )]($style)'
+detect_extensions = []
 
 [raku]
 format = 'via [$symbol]($style)'
