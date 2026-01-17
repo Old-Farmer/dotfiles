@@ -5,8 +5,6 @@ vim.cmd([=[
 let mapleader = " "
 let maplocalleader = "\\"
 
-set clipboard=unnamedplus
-
 set number
 set relativenumber
 
@@ -59,24 +57,18 @@ noremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
 
 nmap <esc> <cmd>nohlsearch<cr>
 
-nmap <leader>w <cmd>write<cr>
-
-nmap <leader><leader> :b<space>
-
 nmap <c-left> <cmd>vertical resize -8<cr>
 nmap <c-right> <cmd>vertical resize +8<cr>
 nmap <c-up> <cmd>resize +4<cr>
 nmap <c-down> <cmd>resize -4<cr>
-
-nmap <leader>ss :mksession! ~/sessions/
-nmap <leader>sS :exe "mksession! " .. v:this_session
-nmap <leader>sl :source ~/sessions/
 
 nmap <leader>dl <cmd>lua vim.diagnostic.setloclist()<cr>
 nmap <leader>dq <cmd>lua vim.diagnostic.setqflist()<cr>
 
 nmap gd <cmd>lua vim.lsp.buf.definition()<cr>
 nmap gD <cmd>lua vim.lsp.buf.declaration()<cr>
+nmap grh <cmd>lua vim.lsp.buf.document_highlight()<cr>
+nmap grc <cmd>lua vim.lsp.buf.clear_references()<cr>
 
 " autocmds
 augroup ft_augroup
@@ -85,14 +77,6 @@ augroup ft_augroup
   autocmd FileType qf nnoremap <buffer> o <enter><c-w>p
 augroup END
 ]=])
-
--- Diagnostic
--- vim.diagnostic.config({
---   virtual_text = {
---     -- source = "if_many",
---     prefix = "●",
---   },
--- })
 
 -- Plugins
 vim.api.nvim_create_autocmd("PackChanged", {
@@ -180,6 +164,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 -- LspProgress
+-- A little bit too much, hope neovim core could support it by default.
 local lsp_progress = {}
 vim.api.nvim_create_autocmd("LspProgress", {
   group = lsp_group,
@@ -187,7 +172,6 @@ vim.api.nvim_create_autocmd("LspProgress", {
     local value = ev.data.params.value
     local client_id = ev.data.client_id
     local token = ev.data.params.token
-
     if value.kind == "begin" then
       local client = vim.lsp.get_client_by_id(client_id)
       if not client then
@@ -206,7 +190,6 @@ vim.api.nvim_create_autocmd("LspProgress", {
       progress.id = vim.api.nvim_echo({ { value.title } }, false, progress)
       return
     end
-
     local progress = lsp_progress[client_id][token]
     if value.kind == "report" then
       progress.percent = value.percentage
@@ -237,6 +220,23 @@ vim.lsp.config("clangd", {
   },
 })
 vim.cmd([[nmap <leader>ch <cmd>LspClangdSwitchSourceHeader<cr>]])
+-- gopls
+vim.lsp.config("gopls", {
+  -- https://go.dev/gopls/settings
+  settings = {
+    gopls = {
+      hints = {
+        rangeVariableTypes = true,
+        parameterNames = true,
+        constantValues = true,
+        assignVariableTypes = true,
+        compositeLiteralFields = true,
+        compositeLiteralTypes = true,
+        functionTypeParameters = true,
+      },
+    },
+  },
+})
 -- lua_ls
 vim.lsp.config("lua_ls", {
   settings = {
