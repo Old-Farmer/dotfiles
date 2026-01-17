@@ -143,6 +143,7 @@ command MasonInstallAll
 \ shfmt
 \ stylua
 \ neocmakelsp
+\ gopls
 ]])
 
 -- Lsp
@@ -184,32 +185,40 @@ vim.api.nvim_create_autocmd("LspProgress", {
   group = lsp_group,
   callback = function(ev)
     local value = ev.data.params.value
+    local client_id = ev.data.client_id
+    local token = ev.data.params.token
+
     if value.kind == "begin" then
-      local client = vim.lsp.get_client_by_id(ev.data.client_id)
+      local client = vim.lsp.get_client_by_id(client_id)
       if not client then
         return
       end
-      lsp_progress.client_id = {
+      if not lsp_progress[client_id] then
+        lsp_progress[client_id] = {}
+      end
+      local progress = {
         kind = "progress",
         status = "running",
         percent = value.percentage,
-        title = string.format("LspProgress(%s[%d])", client.name, ev.data.client_id),
+        title = string.format("LspProgress(%s[%d])", client.name, client_id),
       }
-      lsp_progress.client_id.id = vim.api.nvim_echo({ { value.title } }, false, lsp_progress.client_id)
+      lsp_progress[client_id][token] = progress
+      progress.id = vim.api.nvim_echo({ { value.title } }, false, progress)
       return
     end
 
-    if not lsp_progress.client_id then
-      return
-    end
+    local progress = lsp_progress[client_id][token]
     if value.kind == "report" then
-      lsp_progress.client_id.percent = value.percentage
-      vim.api.nvim_echo({ { value.title } }, false, lsp_progress.client_id)
+      progress.percent = value.percentage
+      vim.api.nvim_echo({ { value.title } }, false, progress)
     else
-      lsp_progress.client_id.percent = 100
-      lsp_progress.client_id.status = "success"
-      vim.api.nvim_echo({ { value.title } }, true, lsp_progress.client_id)
-      lsp_progress.client_id = nil
+      progress.percent = 100
+      progress.status = "success"
+      vim.api.nvim_echo({ { value.title } }, true, progress)
+      lsp_progress[client_id][token] = nil
+      if not next(lsp_progress[client_id]) then
+        lsp_progress[client_id] = nil
+      end
     end
   end,
 })
@@ -240,6 +249,7 @@ vim.lsp.config("lua_ls", {
 })
 vim.lsp.enable({
   "clangd",
+  "gopls",
   "lua_ls",
   "neocmake",
 })
