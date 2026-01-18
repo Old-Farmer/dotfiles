@@ -108,7 +108,6 @@ vim.pack.add({
   },
   gh("stevearc/conform.nvim"),
   gh("folke/lazydev.nvim"), -- Just for lua config dev
-  gh("lewis6991/gitsigns.nvim"),
   gh("mason-org/mason.nvim"),
   gh("windwp/nvim-autopairs"),
   gh("mfussenegger/nvim-lint"),
@@ -369,14 +368,3 @@ end)
 -- auto-pair
 require("nvim-autopairs").setup()
 
--- Git
-vim.cmd([[
-nnoremap <expr> ]c &diff ? ']c' : '<cmd>Gitsigns next_hunk<cr>'
-nnoremap <expr> [c &diff ? '[c' : '<cmd>Gitsigns prev_hunk<cr>'
-nmap <leader>hs <cmd>Gitsigns stage_hunk<cr>
-vmap <leader>hs <cmd>Gitsigns stage_hunk<cr>
-nmap <leader>hr <cmd>Gitsigns reset_hunk<cr>
-vmap <leader>hr <cmd>Gitsigns reset_hunk<cr>
-nmap <leader>hq <cmd>Gitsigns setqflist all<cr>
-nmap <leader>hl <cmd>Gitsigns setloclist<cr>
-]])
