@@ -20,6 +20,7 @@ set nowrap
 set breakindent
 
 set list
+set listchars=tab:\│\ ,trail:-,nbsp:+ " Make tab better 😁
 set signcolumn=yes
 set smoothscroll
 
@@ -51,6 +52,8 @@ set wildoptions+=fuzzy
 set wildignorecase
 set completeopt+=fuzzy
 
+set exrc
+
 " Keymaps
 noremap <expr> <silent> j v:count == 0 ? 'gj' : 'j'
 noremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
@@ -79,6 +82,10 @@ augroup END
 ]=])
 
 -- Plugins
+vim.cmd([[
+let loaded_netrw = 1
+let loaded_netrwPlugin = 1
+]])
 vim.api.nvim_create_autocmd("PackChanged", {
   callback = function(ev)
     local name, kind = ev.data.spec.name, ev.data.kind
@@ -128,9 +135,80 @@ command MasonInstallAll
 \ stylua
 \ neocmakelsp
 \ gopls
+\ staticcheck
 ]])
 
 -- Lsp
+local lsp_config = {
+  clangd = {
+    cmd = {
+      "clangd",
+      "--header-insertion=never",
+      "--query-driver=/usr/bin/cc,/usr/bin/c++,/usr/bin/gcc*,/usr/bin/g++*,/usr/bin/clang*,/usr/bin/clang++*",
+      "--pretty",
+      "--background-index",
+      "--clang-tidy",
+      "--completion-style=detailed",
+      "--fallback-style=google",
+    },
+  },
+  -- https://go.dev/gopls/editor/vim#a-hrefneovim-config-idneovim-configconfigurationa
+  gopls = {
+    -- https://go.dev/gopls/settings
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        -- gofumpt = true,
+        hints = {
+          rangeVariableTypes = true,
+          parameterNames = true,
+          constantValues = true,
+          assignVariableTypes = true,
+          compositeLiteralFields = true,
+          compositeLiteralTypes = true,
+          functionTypeParameters = true,
+        },
+        staticcheck = true,
+        usePlaceholders = true,
+      },
+    },
+  },
+  lua_ls = {
+    settings = {
+      Lua = {
+        runtime = { version = "LuaJIT" },
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    },
+  },
+  neocmake = {},
+}
+local lsp_onattach = {
+  ---@diagnostic disable-next-line: unused-local
+  clangd = function(ev)
+    vim.cmd([[nmap <buffer> <leader>ch <cmd>LspClangdSwitchSourceHeader<cr>]])
+  end,
+  ---@diagnostic disable-next-line: unused-local
+  gopls = function(ev)
+    -- Organize imports
+    vim.keymap.set("n", "<leader>co", function()
+      vim.lsp.buf.code_action({
+        context = {
+          only = { "source.organizeImports" },
+          diagnostics = {},
+        },
+        apply = true,
+      })
+    end, { buffer = true })
+  end,
+}
+for server, config in ipairs(lsp_config) do
+  vim.lsp.config(server, config)
+end
+vim.lsp.enable(vim.tbl_keys(lsp_config))
 local lsp_group = vim.api.nvim_create_augroup("my.lsp.config", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   group = lsp_group,
@@ -148,8 +226,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
     if not client then
       return
     end
@@ -157,9 +235,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
     if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
       vim.lsp.codelens.refresh()
     end
-
     if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
       vim.lsp.inlay_hint.enable(true, { bufnr = 0 })
+    end
+
+    local onattach = lsp_onattach[client.name]
+    if onattach then
+      onattach(ev)
     end
   end,
 })
@@ -206,54 +288,6 @@ vim.api.nvim_create_autocmd("LspProgress", {
   end,
 })
 
--- clangd
-vim.lsp.config("clangd", {
-  cmd = {
-    "clangd",
-    "--header-insertion=never",
-    "--query-driver=/usr/bin/cc,/usr/bin/c++,/usr/bin/gcc*,/usr/bin/g++*,/usr/bin/clang*,/usr/bin/clang++*",
-    "--pretty",
-    "--background-index",
-    "--clang-tidy",
-    "--completion-style=detailed",
-    "--fallback-style=google",
-  },
-})
-vim.cmd([[nmap <leader>ch <cmd>LspClangdSwitchSourceHeader<cr>]])
--- gopls
-vim.lsp.config("gopls", {
-  -- https://go.dev/gopls/settings
-  settings = {
-    gopls = {
-      hints = {
-        rangeVariableTypes = true,
-        parameterNames = true,
-        constantValues = true,
-        assignVariableTypes = true,
-        compositeLiteralFields = true,
-        compositeLiteralTypes = true,
-        functionTypeParameters = true,
-      },
-    },
-  },
-})
--- lua_ls
-vim.lsp.config("lua_ls", {
-  settings = {
-    Lua = {
-      runtime = { version = "LuaJIT" },
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-    },
-  },
-})
-vim.lsp.enable({
-  "clangd",
-  "gopls",
-  "lua_ls",
-  "neocmake",
-})
-
 -- Treesitter
 local ts_lang = {
   "bash",
@@ -281,8 +315,6 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- file tree
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 require("nvim-tree").setup({
   diagnostics = {
     enable = true,
