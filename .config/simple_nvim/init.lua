@@ -227,6 +227,10 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
   callback = function(ev)
+    -- Skip sth like fugitve://
+    if vim.api.nvim_buf_get_name(ev.buf):match("^%a+://") then
+      return
+    end
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
     if not client then
       return
@@ -324,7 +328,9 @@ require("nvim-tree").setup({
     enable = false,
   },
   renderer = {
-    icons = { git_placement = "right_align" },
+    icons = {
+      git_placement = "right_align",
+    },
     group_empty = true,
     highlight_hidden = "all",
     indent_markers = {
@@ -336,7 +342,9 @@ vim.cmd([[nmap <leader>e <cmd>NvimTreeToggle<cr>]])
 
 -- cmp
 require("blink-cmp").setup({
-  cmdline = { enabled = false },
+  cmdline = {
+    enabled = false,
+  },
   keymap = {
     ["<cr>"] = { "select_and_accept", "fallback" },
   },
@@ -349,7 +357,6 @@ require("blink-cmp").setup({
 -- format
 local conform = require("conform")
 conform.setup({
-  notify_on_error = false,
   formatters_by_ft = {
     lua = { "stylua" },
     sh = { "shfmt" },
@@ -361,3 +368,15 @@ end)
 
 -- auto-pair
 require("nvim-autopairs").setup()
+
+-- Git
+vim.cmd([[
+nnoremap <expr> ]c &diff ? ']c' : '<cmd>Gitsigns next_hunk<cr>'
+nnoremap <expr> [c &diff ? '[c' : '<cmd>Gitsigns prev_hunk<cr>'
+nmap <leader>hs <cmd>Gitsigns stage_hunk<cr>
+vmap <leader>hs <cmd>Gitsigns stage_hunk<cr>
+nmap <leader>hr <cmd>Gitsigns reset_hunk<cr>
+vmap <leader>hr <cmd>Gitsigns reset_hunk<cr>
+nmap <leader>hq <cmd>Gitsigns setqflist all<cr>
+nmap <leader>hl <cmd>Gitsigns setloclist<cr>
+]])
