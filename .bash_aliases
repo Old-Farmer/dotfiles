@@ -31,9 +31,8 @@ alias apap="sudo apt autopurge"
 # alias please="sudo"
 
 # alias for neovim
-alias vi="NVIM_APPNAME=simple_nvim ~/nvim-prerelease/nvim-linux-x86_64/bin/nvim"
-alias lvi="NVIM_APPNAME=lazyvimdev nvim"
-alias kickstartvi="NVIM_APPNAME=kickstart_nvim nvim"
+alias vi="~/nvim-prerelease/nvim-linux-x86_64/bin/nvim"
+alias oldvi="NVIM_APPNAME=old_nvim nvim"
 alias codevi="NVIM_APPNAME=vscode_neovim nvim"
 
 # # alias for kitty

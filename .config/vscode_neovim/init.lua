@@ -6,14 +6,11 @@ if vim.g.vscode then
 
   -- options
   vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
-  vim.g.maplocalleader = " " -- Same for `maplocalleader`
-  vim.o.clipboard = "unnamedplus"
+  vim.g.maplocalleader = "\\"
   vim.o.ignorecase = true
   vim.o.smartcase = true
   vim.o.timeoutlen = 2000
-  vim.o.updatetime = 250
   vim.o.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
-  vim.o.mouse = "a"
 
   local vscode = require("vscode")
   local map = vim.keymap.set
@@ -25,7 +22,7 @@ if vim.g.vscode then
   -- https://github.com/vscode-neovim/vscode-neovim/blob/68f056b4c9cb6b2559baa917f8c02166abd86f11/vim/vscode-code-actions.vim#L93-L95
   -- for why using remap = true
   -- key repeat rate must be slower than 20ms / key, then the cursor synchronization between vscode and neovim will work properly
-  map({ "n", "x" }, "j", function()
+  map({ "n", "v", "x" }, "j", function()
     -- Fix some issues in windows
     local row = vim.api.nvim_win_get_cursor(0)[1]
     local total_lines = vim.api.nvim_buf_line_count(0)
@@ -34,7 +31,7 @@ if vim.g.vscode then
     end
     return vim.v.count == 0 and "gj" or "j"
   end, { desc = "Down", expr = true, silent = true, remap = true })
-  map({ "n", "x" }, "k", function()
+  map({ "n", "v", "x" }, "k", function()
     local row = vim.api.nvim_win_get_cursor(0)[1]
     if row == 1 then
       return "<Ignore>"
@@ -95,9 +92,6 @@ if vim.g.vscode then
   -- Clear search with <esc>
   map("n", "<esc>", "<cmd>nohlsearch<cr>", { desc = "Clear hlsearch" })
 
-  -- Save
-  map("n", "<leader>w", "<cmd>write<cr><esc>", { desc = "Save file" })
-
   -- vscode tab
   -- In Vscode Neovim, buffers cmds & keymaps can't work now, so I create some.
   map("n", "<S-H>", "<cmd>Tabprevious<cr>")
@@ -123,19 +117,19 @@ if vim.g.vscode then
   --   vscode.call("workbench.action.navigateDown")
   -- end)
 
-  -- Not set this because win has some shortcut confliction
-  -- map("n", "<c-up>", function()
-  --   vscode.action("workbench.action.increaseViewHeight")
-  -- end, { desc = "Increase window height" })
-  -- map("n", "<c-down>", function()
-  --   vscode.action("workbench.action.decreaseViewHeight")
-  -- end, { desc = "Decrease window height" })
-  -- map("n", "<c-left>", function()
-  --   vscode.action("workbench.action.decreaseViewWidth")
-  -- end, { desc = "Decrease window width" })
-  -- map("n", "<c-right>", function()
-  --   vscode.action("workbench.action.increaseViewWidth")
-  -- end, { desc = "Increase window width" })
+  -- Not set this because win has some shortcut confliction?
+  map("n", "<c-up>", function()
+    vscode.action("workbench.action.increaseViewHeight")
+  end, { desc = "Increase window height" })
+  map("n", "<c-down>", function()
+    vscode.action("workbench.action.decreaseViewHeight")
+  end, { desc = "Decrease window height" })
+  map("n", "<c-left>", function()
+    vscode.action("workbench.action.decreaseViewWidth")
+  end, { desc = "Decrease window width" })
+  map("n", "<c-right>", function()
+    vscode.action("workbench.action.increaseViewWidth")
+  end, { desc = "Increase window width" })
 
   -- Search
   map("n", "<leader><space>", function()
@@ -156,10 +150,6 @@ if vim.g.vscode then
   end)
 
   -- format
-  map("n", "<leader>cf", function()
-    vscode.action("editor.action.formatDocument")
-  end)
-  map("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<cr><esc>")
   map("n", "<leader>f", function()
     vscode.action("editor.action.formatDocument")
   end)
@@ -207,7 +197,7 @@ if vim.g.vscode then
   map("n", "[d", function()
     vscode.action("editor.action.marker.prev")
   end)
-  map("n", "<leader>xx", function()
+  map("n", "<leader>dd", function()
     vscode.action("workbench.actions.view.problems")
   end)
 
@@ -380,274 +370,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     {
-      "mason-org/mason.nvim",
-      -- mason.nvim is optimized to load as little as possible during setup.
-      -- Lazy-loading the plugin, or somehow deferring the setup, is not recommended.
-      lazy = false,
-      opts = {
-        ensure_installed = {
-          "tree-sitter-cli",
-        },
-      },
-      config = function(_, opts)
-        require("mason").setup(opts)
-        local mr = require("mason-registry")
-        mr.refresh(function()
-          for _, pkg in ipairs(opts.ensure_installed) do
-            if not mr.is_installed(pkg) then
-              vim.cmd("MasonInstall " .. pkg)
-            end
-          end
-        end)
-      end,
-    },
-    {
-      "nvim-treesitter/nvim-treesitter",
-      dependencies = { "mason-org/mason.nvim" },
-      build = ":TSUpdate",
-      branch = "main",
-      lazy = false,
-      opts = {
-        ensure_installed = {
-          "awk",
-          "bash",
-          -- "c",
-          "cmake",
-          "cpp",
-          -- "diff",
-          -- "html",
-          "go",
-          "java",
-          "javascript",
-          "jsdoc",
-          "json",
-          "jsonc",
-          -- "lua",
-          -- "luadoc",
-          -- "luap",
-          "markdown",
-          "markdown_inline",
-          -- "printf",
-          "python",
-          -- "query",
-          -- "regex",
-          "rust",
-          "toml",
-          -- "tsx",
-          "typescript",
-          -- "vim",
-          -- "vimdoc",
-          "xml",
-          "yaml",
-        },
-      },
-      config = function(_, opts)
-        local nvim_treesitter = require("nvim-treesitter")
-        nvim_treesitter.setup({
-          -- Directory to install parsers and queries to
-          install_dir = vim.fn.stdpath("data") .. "/site",
-        })
-        nvim_treesitter.install(opts.ensure_installed)
-      end,
-    },
-    {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-      dependencies = { "nvim-treesitter/nvim-treesitter" },
-      branch = "main", -- Use main branch
-      keys = {
-        {
-          "af",
-          function()
-            require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
-          end,
-          mode = { "x", "o" },
-          desc = "Function(outer)",
-        },
-        {
-          "if",
-          function()
-            require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
-          end,
-          mode = { "x", "o" },
-          desc = "Function(inner)",
-        },
-        {
-          "ac",
-          function()
-            require("nvim-treesitter-textobjects.select").select_textobject("@class.outer", "textobjects")
-          end,
-          mode = { "x", "o" },
-          desc = "Class(outer)",
-        },
-        {
-          "ic",
-          function()
-            require("nvim-treesitter-textobjects.select").select_textobject("@class.inner", "textobjects")
-          end,
-          mode = { "x", "o" },
-          desc = "Class(inner)",
-        },
-        {
-          "as",
-          function()
-            require("nvim-treesitter-textobjects.select").select_textobject("@local.scope", "locals")
-          end,
-          mode = { "x", "o" },
-          desc = "Scope",
-        },
-        {
-          "<leader>a",
-          function()
-            require("nvim-treesitter-textobjects.swap").swap_next("@parameter.inner")
-          end,
-          desc = "Swap parameter(inner)",
-        },
-        {
-          "<leader>A",
-          function()
-            require("nvim-treesitter-textobjects.swap").swap_next("@parameter.outer")
-          end,
-          desc = "Swap parameter(outer)",
-        },
-        {
-          "]m",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next method start",
-        },
-        {
-          "[m",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev method start",
-        },
-        {
-          "]M",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_end("@function.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next method end",
-        },
-        {
-          "[M",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_end("@function.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev method end",
-        },
-        {
-          "]c",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_start("@class.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next class start",
-        },
-        {
-          "[c",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev class start",
-        },
-        {
-          "]C",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_end("@class.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next class end",
-        },
-        {
-          "[C",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_end("@class.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev class end",
-        },
-        {
-          "[o",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_start("@loop.*", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next loop",
-        },
-        {
-          "]o",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_start("@loop.*", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev loop",
-        },
-        {
-          "[i",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_start("@conditional.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next conditional",
-        },
-        {
-          "]i",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_start("@conditional.outer", "textobjects")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev conditional",
-        },
-        {
-          "[s",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_next_start("@local.scope", "locals")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Next scope",
-        },
-        {
-          "]s",
-          function()
-            require("nvim-treesitter-textobjects.move").goto_previous_start("@local.scope", "locals")
-          end,
-          mode = { "n", "x", "o" },
-          desc = "Prev scope",
-        },
-      },
-      opts = {
-        select = {
-          -- Automatically jump forward to textobj, similar to targets.vim
-          lookahead = true,
-          -- You can choose the select mode (default is charwise 'v')
-          --
-          -- Can also be a function which gets passed a table with the keys
-          -- * query_string: eg '@function.inner'
-          -- * method: eg 'v' or 'o'
-          -- and should return the mode ('v', 'V', or '<c-v>') or a table
-          -- mapping query_strings to modes.
-          -- selection_modes = {
-          --   ["@parameter.outer"] = "v", -- charwise
-          --   ["@function.outer"] = "V", -- linewise
-          --   ["@class.outer"] = "<c-v>", -- blockwise
-          -- },
-        },
-        move = {
-          -- whether to set jumps in the jumplist
-          set_jumps = true,
-        },
-      },
-    },
-    {
       "Old-Farmer/im-autoswitch.nvim",
-      dev = true,
       event = "BufEnter",
       opts = {
         cmd_os = {
@@ -673,25 +396,6 @@ require("lazy").setup({
         check_wsl = true,
       },
     },
-    {
-      "folke/flash.nvim",
-      dependencies = { "nvim-treesitter/nvim-treesitter" },
-      event = "VeryLazy",
-      ---@type Flash.Config
-      opts = {},
-      -- stylua: ignore
-      keys = {
-        { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
-        { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
-        { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
-        { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-        { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
-      },
-    },
-    -- {
-    --   "xiyaowong/fast-cursor-move.nvim",
-    --   event = "VeryLazy",
-    -- },
   },
   defaults = {
     lazy = true,

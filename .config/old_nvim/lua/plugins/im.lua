@@ -5,7 +5,7 @@ end
 return {
   -- Input method auto switching
   "Old-Farmer/im-autoswitch.nvim",
-  -- dev = true,
+  dev = true,
   event = "BufEnter",
   opts = {
     cmd_os = {
@@ -29,5 +29,8 @@ return {
       terminal = false,
     },
     check_wsl = true,
+    ssh = {
+      enabled = true,
+    }
   },
 }
