@@ -82,6 +82,12 @@ augroup ft_augroup
   autocmd FileType qf nnoremap <buffer> o <enter><c-w>p
 augroup END
 
+augroup vim_session
+  autocmd VimLeavePre * if !empty(v:this_session)
+  \ | execute "mksession! " .. v:this_session
+  \ | endif
+augroup END
+
 " Commands
 function s:showMessage()
   let messagesStr = trim(execute("messages"))
