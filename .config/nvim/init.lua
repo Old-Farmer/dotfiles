@@ -10,6 +10,9 @@ let maplocalleader = "\\"
 set number
 set relativenumber
 
+" Schedule time-consuming 'set clipboard'
+lua vim.schedule(function() vim.o.clipboard="unnamedplus" end)
+
 set undofile
 
 set ignorecase
@@ -42,7 +45,7 @@ set scrolloff=8
 
 set tabstop=4
 set expandtab
-set shiftwidth=0 " follow tabstop
+set shiftwidth=0 " Follow tabstop
 
 set confirm
 
@@ -61,6 +64,8 @@ noremap <expr> <silent> k v:count == 0 ? "gk" : "k"
 
 nmap <esc> <cmd>nohlsearch<cr>
 
+tnoremap <esc><esc> <c-\><c-n>
+
 nmap <c-left> <cmd>vertical resize -8<cr>
 nmap <c-right> <cmd>vertical resize +8<cr>
 nmap <c-up> <cmd>resize +4<cr>
@@ -73,34 +78,35 @@ nmap gd <cmd>lua vim.lsp.buf.definition()<cr>
 nmap gD <cmd>lua vim.lsp.buf.declaration()<cr>
 nmap grh <cmd>lua vim.lsp.buf.document_highlight()<cr>
 nmap grc <cmd>lua vim.lsp.buf.clear_references()<cr>
+nmap <leader>cs <cmd>lua vim.lsp.buf.workspace_symbol()<cr>
 
 " Autocmds
 augroup ft_augroup
-  autocmd FileType lua setlocal tabstop=2
-  autocmd FileType json setlocal tabstop=2
+  autocmd FileType lua,json,yaml setlocal tabstop=2
   autocmd FileType markdown setlocal wrap
   autocmd FileType qf nnoremap <buffer> o <enter><c-w>p
 augroup END
 
-augroup vim_session
+augroup my_augroup
   autocmd VimLeavePre * if !empty(v:this_session)
   \ | execute "mksession! " .. v:this_session
   \ | endif
+  " See :help faq for cursor restore on exit
 augroup END
 
 " Commands
-function s:showMessage()
-  let messagesStr = trim(execute("messages"))
+function s:bufExecute(cmd)
+  let output = trim(execute(a:cmd))
   new
-  call setbufline(bufnr(), 1, split(messagesStr, "\n"))
   setlocal nobuflisted
-  setlocal nomodifiable
   setlocal bufhidden=wipe
   setlocal buftype=nofile
   setlocal noswapfile
-  file [MyMessages]
+  file [Ex Output]
+  call setbufline(bufnr(), 1, split(output, "\n"))
+  setlocal nomodifiable
 endfunction
-command Messages call s:showMessage()
+command -nargs=+ -complete=command Redir call s:bufExecute(<q-args>)
 ]=])
 
 -- Plugins and Related Configs
@@ -109,40 +115,42 @@ vim.cmd([[
 let loaded_netrw = 1
 let loaded_netrwPlugin = 1
 ]])
-vim.api.nvim_create_autocmd("PackChanged", {
-  callback = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    if name == "nvim-treesitter" and kind == "update" then
-      if not ev.data.active then
-        vim.cmd("packadd nvim-treesitter")
-      end
-      vim.cmd("TSUpdate")
-    end
-  end,
-})
 
-local function gh(path)
-  return "https://github.com/" .. path
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
-vim.pack.add({
-  {
-    src = gh("saghen/blink.cmp"),
-    version = vim.version.range("1.*"),
+vim.opt.rtp:prepend(lazypath)
+require("lazy").setup({
+  spec = {
+    { "carlos-algms/agentic.nvim" },
+    { "saghen/blink.cmp", version = "1.*" },
+    { "stevearc/conform.nvim" },
+    { "Old-Farmer/im-autoswitch.nvim" },
+    { "mason-org/mason.nvim" },
+    { "windwp/nvim-autopairs" },
+    { "mfussenegger/nvim-lint" },
+    { "neovim/nvim-lspconfig" },
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+    { "nvim-tree/nvim-web-devicons" }, -- dependency
+    { "nvim-tree/nvim-tree.lua" },
+    { "tpope/vim-fugitive" },
+    { "folke/tokyonight.nvim" },
+    { "mbbill/undotree" },
   },
-  gh("stevearc/conform.nvim"),
-  gh("mason-org/mason.nvim"),
-  gh("windwp/nvim-autopairs"),
-  gh("mfussenegger/nvim-lint"),
-  gh("neovim/nvim-lspconfig"),
-  gh("nvim-treesitter/nvim-treesitter"),
-  gh("nvim-tree/nvim-web-devicons"), -- dependency
-  gh("nvim-tree/nvim-tree.lua"),
-  gh("folke/tokyonight.nvim"),
-  gh("tpope/vim-fugitive"),
 })
 
 -- UI
-require("tokyonight").setup()
 vim.cmd([[colorscheme tokyonight-night]])
 
 -- Mason
@@ -310,48 +318,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
   end,
 })
--- LspProgress
--- A little bit too much, hope neovim core could support it by default.
-local lsp_progress = {}
-vim.api.nvim_create_autocmd("LspProgress", {
-  group = lsp_group,
-  callback = function(ev)
-    local value = ev.data.params.value
-    local client_id = ev.data.client_id
-    local token = ev.data.params.token
-    if value.kind == "begin" then
-      local client = vim.lsp.get_client_by_id(client_id)
-      if client == nil then
-        return
-      end
-      if lsp_progress[client_id] == nil then
-        lsp_progress[client_id] = {}
-      end
-      local progress = {
-        kind = "progress",
-        status = "running",
-        percent = value.percentage,
-        title = string.format("LspProgress(%s[%d])", client.name, client_id),
-      }
-      lsp_progress[client_id][token] = progress
-      progress.id = vim.api.nvim_echo({ { value.title } }, false, progress)
-      return
-    end
-    local progress = lsp_progress[client_id][token]
-    if value.kind == "report" then
-      progress.percent = value.percentage
-      vim.api.nvim_echo({ { value.title } }, false, progress)
-    else
-      progress.percent = 100
-      progress.status = "success"
-      vim.api.nvim_echo({ { value.title } }, true, progress)
-      lsp_progress[client_id][token] = nil
-      if not next(lsp_progress[client_id]) then
-        lsp_progress[client_id] = nil
-      end
-    end
-  end,
-})
 
 -- Treesitter
 local ts_lang = {
@@ -361,12 +327,17 @@ local ts_lang = {
   "cmake",
   "go",
   "java",
+  "json",
   "lua",
   "markdown",
+  "markdown_inline",
   "python",
+  "sql",
   "vim",
   "vimdoc",
   "rust",
+  "toml",
+  "yaml",
 }
 require("nvim-treesitter").install(ts_lang)
 vim.api.nvim_create_autocmd("FileType", {
@@ -430,3 +401,38 @@ end)
 
 -- auto-pair
 require("nvim-autopairs").setup()
+
+-- im
+require("imas").setup({
+  cmd_os = {
+    linux = {
+      default_im = "keyboard-us",
+      get_im_cmd = "fcitx5-remote -n",
+      switch_im_cmd = "fcitx5-remote -s {}",
+    },
+    macos = {
+      default_im = "com.apple.keylayout.ABC",
+      get_im_cmd = "im-select",
+      switch_im_cmd = "im-select {}",
+    },
+    windows = {
+      default_im = "1033", -- 2052
+      get_im_cmd = "im-select.exe",
+      switch_im_cmd = "im-select.exe {}",
+    },
+  },
+  mode = {
+    terminal = false,
+  },
+  check_wsl = true,
+})
+
+-- ACP
+local agentic = require("agentic")
+agentic.setup({
+  provider = "copilot-acp",
+})
+vim.keymap.set({ "n" }, "<leader>aa", agentic.toggle)
+vim.keymap.set({ "n", "v" }, "<leader>as", agentic.add_selection_or_file_to_context)
+vim.keymap.set({ "n" }, "<leader>ar", agentic.restore_session)
+vim.keymap.set({ "n" }, "<leader>an", agentic.new_session)

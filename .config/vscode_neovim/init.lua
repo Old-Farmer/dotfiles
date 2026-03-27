@@ -11,6 +11,7 @@ if vim.g.vscode then
   vim.o.smartcase = true
   vim.o.timeoutlen = 2000
   vim.o.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
+  vim.o.clipboard = "unnamedplus"
 
   local vscode = require("vscode")
   local map = vim.keymap.set
