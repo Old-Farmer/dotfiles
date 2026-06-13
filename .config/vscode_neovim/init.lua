@@ -95,8 +95,8 @@ if vim.g.vscode then
 
   -- vscode tab
   -- In Vscode Neovim, buffers cmds & keymaps can't work now, so I create some.
-  map("n", "<S-H>", "<cmd>Tabprevious<cr>")
-  map("n", "<S-L>", "<cmd>Tabnext<cr>")
+  -- map("n", "<S-H>", "<cmd>Tabprevious<cr>")
+  -- map("n", "<S-L>", "<cmd>Tabnext<cr>")
   map("n", "[b", "<cmd>Tabprevious<cr>")
   map("n", "]b", "<cmd>Tabnext<cr>")
   map("n", "<leader>bd", "<cmd>Tabclose<cr>")
@@ -192,6 +192,9 @@ if vim.g.vscode then
   end)
 
   -- problem
+  map("n", "<c-w>d", function()
+    vscode.action("editor.action.marker.next")
+  end)
   map("n", "]d", function()
     vscode.action("editor.action.marker.next")
   end)

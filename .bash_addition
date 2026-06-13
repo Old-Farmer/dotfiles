@@ -114,12 +114,12 @@ export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/go/bin/
 
 # go bash completion
-complete -C /home/shixinchai/go/bin/gocomplete go
+complete -C ~/go/bin/gocomplete go
 
 # cargo
 . "$HOME/.cargo/env"
 
-# starship
+# # starship
 eval "$(starship init bash)"
 
 # fnm
@@ -185,3 +185,6 @@ export VCPKG_CMAKE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
 function cmake_vcpkg() {
     cmake -DCMAKE_TOOLCHAIN_FILE=${VCPKG_CMAKE} $@
 }
+
+# zig
+export PATH=$PATH:~/zig-x86_64-linux-0.16.0/

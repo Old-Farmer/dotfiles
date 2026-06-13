@@ -30,13 +30,14 @@ set signcolumn=yes
 set smoothscroll
 
 set cursorline
+set guifont=JetbrainsMono\ Nerd\ Font:h12
 set guicursor=
 \n-v-c:block,
 \i-ci-ve:ver25,
 \r-cr:hor20,
 \o:hor50,
-\a:blinkwait1-blinkoff600-blinkon600-Cursor/lCursor,
-\sm:block-blinkwait1-blinkoff600-blinkon600
+\a:blinkwait150-blinkoff600-blinkon600-Cursor/lCursor,
+\sm:block-blinkwait150-blinkoff600-blinkon600
 
 set noshowcmd
 set shortmess+=w
@@ -58,13 +59,31 @@ set completeopt+=fuzzy
 
 set exrc
 
+if exists("g:neovide")
+  let g:neovide_padding_top = 10
+  let g:neovide_padding_right = 5
+  let g:neovide_padding_left = 5
+  let g:neovide_cursor_animation_length = 0.05
+  let g:neovide_scroll_animation_length = 0.1
+  " let g:neovide_cursor_smooth_blink = v:true
+  let g:neovide_cursor_trail_size = 0.6
+  " let g:neovide_cursor_animate_command_line = v:false
+  let g:neovide_cursor_hack = v:false
+  let g:neovide_cursor_unfocused_outline_width = 0.05
+endif
+
 " Keymaps
 noremap <expr> <silent> j v:count == 0 ? "gj" : "j"
 noremap <expr> <silent> k v:count == 0 ? "gk" : "k"
+sunmap j
+sunmap k
 
 nmap <esc> <cmd>nohlsearch<cr>
 
-tnoremap <esc><esc> <c-\><c-n>
+" Better builtin terminal
+tnoremap <m-w> <c-\><c-n><c-w>
+tnoremap <m-w><m-w> <m-w>
+tnoremap <m-w>: <c-\><c-o>:
 
 nmap <c-left> <cmd>vertical resize -8<cr>
 nmap <c-right> <cmd>vertical resize +8<cr>
@@ -82,16 +101,25 @@ nmap <leader>cs <cmd>lua vim.lsp.buf.workspace_symbol()<cr>
 
 " Autocmds
 augroup ft_augroup
+  autocmd!
   autocmd FileType lua,json,yaml setlocal tabstop=2
   autocmd FileType markdown setlocal wrap
   autocmd FileType qf nnoremap <buffer> o <enter><c-w>p
 augroup END
 
 augroup my_augroup
+  autocmd!
   autocmd VimLeavePre * if !empty(v:this_session)
   \ | execute "mksession! " .. v:this_session
   \ | endif
   " See :help faq for cursor restore on exit
+augroup END
+
+augroup term_auto_insert
+    autocmd!
+    autocmd BufEnter term://* startinsert
+    autocmd BufLeave term://* stopinsert
+    autocmd TermOpen term://* startinsert
 augroup END
 
 " Commands
@@ -114,40 +142,46 @@ command -nargs=+ -complete=command Redir call s:bufExecute(<q-args>)
 vim.cmd([[
 let loaded_netrw = 1
 let loaded_netrwPlugin = 1
+packadd nvim.undotree
 ]])
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function(ev)
+    local name, kind = ev.data.spec.name, ev.data.kind
+    if name == "nvim-treesitter" and kind == "update" then
+      if not ev.data.active then
+        vim.cmd("packadd nvim-treesitter")
+      end
+      vim.cmd("TSUpdate")
+    end
+  end,
+})
+
+local function gh(path)
+  return "https://github.com/" .. path
 end
-vim.opt.rtp:prepend(lazypath)
-require("lazy").setup({
-  spec = {
-    { "carlos-algms/agentic.nvim" },
-    { "saghen/blink.cmp", version = "1.*" },
-    { "stevearc/conform.nvim" },
-    { "Old-Farmer/im-autoswitch.nvim" },
-    { "mason-org/mason.nvim" },
-    { "windwp/nvim-autopairs" },
-    { "mfussenegger/nvim-lint" },
-    { "neovim/nvim-lspconfig" },
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    { "nvim-tree/nvim-web-devicons" }, -- dependency
-    { "nvim-tree/nvim-tree.lua" },
-    { "tpope/vim-fugitive" },
-    { "folke/tokyonight.nvim" },
-    { "mbbill/undotree" },
+
+-- Dependencies
+vim.pack.add({
+  gh("nvim-tree/nvim-web-devicons"),
+})
+
+vim.pack.add({
+  gh("carlos-algms/agentic.nvim"),
+  {
+    src = gh("saghen/blink.cmp"),
+    version = vim.version.range("1.*"),
   },
+  gh("stevearc/conform.nvim"),
+  gh("Old-Farmer/im-autoswitch.nvim"),
+  gh("mason-org/mason.nvim"),
+  gh("windwp/nvim-autopairs"),
+  gh("mfussenegger/nvim-lint"),
+  gh("neovim/nvim-lspconfig"),
+  gh("nvim-treesitter/nvim-treesitter"),
+  gh("nvim-tree/nvim-tree.lua"),
+  gh("tpope/vim-fugitive"),
+  gh("folke/tokyonight.nvim"),
 })
 
 -- UI
@@ -160,13 +194,15 @@ command MasonInstallAll
 \ MasonInstall
 \ basedpyright
 \ clangd
-\ tree-sitter-cli
+\ gopls
+\ json-lsp
 \ lua-language-server
+\ neocmakelsp
 \ shfmt
 \ stylua
-\ neocmakelsp
-\ gopls
 \ staticcheck
+\ tree-sitter-cli
+\ zls
 ]])
 
 -- Lsp
@@ -205,6 +241,16 @@ local lsp_config = {
         },
         staticcheck = true,
         usePlaceholders = true,
+      },
+    },
+  },
+  jsonls = {
+    -- See
+    -- https://github.com/microsoft/vscode/blob/main/extensions/json-language-features/package.json
+    -- contributes.configuration.properties
+    settings = {
+      json = {
+        keepLines = { enable = true },
       },
     },
   },
@@ -268,6 +314,7 @@ local lsp_config = {
       },
     },
   },
+  zls = {},
 }
 local lsp_onattach = {
   ---@diagnostic disable-next-line: unused-local
@@ -305,9 +352,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
       return
     end
 
-    if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
-      vim.lsp.codelens.refresh()
-    end
+    -- codelens is not that good support in neovim, disable it now.
+    -- if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
+    --   vim.lsp.codelens.enable(true)
+    -- end
     if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
       vim.lsp.inlay_hint.enable(true, { bufnr = 0 })
     end
@@ -379,7 +427,7 @@ require("blink-cmp").setup({
   },
   keymap = {
     ["<cr>"] = { "select_and_accept", "fallback" },
-    ["<C-k>"] = false, -- Use <c-s>
+    ["<c-k>"] = false, -- Use <c-s>
   },
   sources = {
     -- Not use path because sometimes annoying
@@ -402,30 +450,96 @@ end)
 -- auto-pair
 require("nvim-autopairs").setup()
 
--- im
-require("imas").setup({
-  cmd_os = {
-    linux = {
-      default_im = "keyboard-us",
-      get_im_cmd = "fcitx5-remote -n",
-      switch_im_cmd = "fcitx5-remote -s {}",
+-- ime
+if vim.g.neovide then
+  local function set_ime(args)
+    if args.event:match("Enter$") then
+      vim.g.neovide_input_ime = true
+    else
+      vim.g.neovide_input_ime = false
+    end
+  end
+
+  local ime_input = vim.api.nvim_create_augroup("ime_input", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
+    group = ime_input,
+    pattern = "*",
+    callback = set_ime,
+  })
+
+  vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineLeave" }, {
+    group = ime_input,
+    pattern = "[/\\?]",
+    callback = set_ime,
+  })
+else
+  require("imas").setup({
+    cmd_os = {
+      linux = {
+        default_im = "keyboard-us",
+        get_im_cmd = "fcitx5-remote -n",
+        switch_im_cmd = "fcitx5-remote -s {}",
+      },
+      macos = {
+        default_im = "com.apple.keylayout.ABC",
+        get_im_cmd = "im-select",
+        switch_im_cmd = "im-select {}",
+      },
+      windows = {
+        default_im = "1033", -- 2052
+        get_im_cmd = "im-select.exe",
+        switch_im_cmd = "im-select.exe {}",
+      },
     },
-    macos = {
-      default_im = "com.apple.keylayout.ABC",
-      get_im_cmd = "im-select",
-      switch_im_cmd = "im-select {}",
+    mode = {
+      terminal = false,
     },
-    windows = {
-      default_im = "1033", -- 2052
-      get_im_cmd = "im-select.exe",
-      switch_im_cmd = "im-select.exe {}",
-    },
-  },
-  mode = {
-    terminal = false,
-  },
-  check_wsl = true,
-})
+    check_wsl = true,
+  })
+end
+
+-- Float Terminal
+local function fullscreen_float(buf)
+  buf = buf or vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = vim.o.columns,
+    height = vim.o.lines - 1,
+    row = 0,
+    col = 0,
+    style = "minimal",
+    border = "none",
+  })
+  return win, buf
+end
+
+local term_buf, float_term_win
+local function toggle_terminal()
+  if float_term_win then
+    vim.api.nvim_win_close(0, false)
+    float_term_win = nil
+    return
+  end
+
+  if term_buf then
+    float_term_win = fullscreen_float(term_buf)
+  else
+    float_term_win, term_buf = fullscreen_float()
+    -- vim.cmd("keepalt keepjumps terminal")
+    vim.cmd.terminal()
+    vim.bo.buflisted = false
+    vim.api.nvim_create_autocmd("BufUnload", {
+      buf = term_buf,
+      callback = function()
+        term_buf = nil
+        float_term_win = nil
+      end,
+    })
+  end
+end
+vim.keymap.set({ "n", "t" }, "<C-/>", toggle_terminal)
+vim.keymap.set({ "n", "t" }, "<C-_>", toggle_terminal)
 
 -- ACP
 local agentic = require("agentic")
