@@ -11,7 +11,9 @@ set number
 set relativenumber
 
 " Schedule time-consuming 'set clipboard'
-lua vim.schedule(function() vim.o.clipboard="unnamedplus" end)
+" lua vim.schedule(function() vim.o.clipboard="unnamedplus" end)
+
+set timeoutlen=50000
 
 set undofile
 
@@ -135,7 +137,50 @@ function s:bufExecute(cmd)
   setlocal nomodifiable
 endfunction
 command -nargs=+ -complete=command Redir call s:bufExecute(<q-args>)
+
 ]=])
+
+-- Float Terminal
+local function fullscreen_float(buf)
+  buf = buf or vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = vim.o.columns,
+    height = vim.o.lines - 1,
+    row = 0,
+    col = 0,
+    style = "minimal",
+    border = "none",
+  })
+  return win, buf
+end
+
+local term_buf, float_term_win
+local function toggle_terminal()
+  if float_term_win then
+    vim.api.nvim_win_close(0, false)
+    float_term_win = nil
+    return
+  end
+
+  if term_buf then
+    float_term_win = fullscreen_float(term_buf)
+  else
+    float_term_win, term_buf = fullscreen_float()
+    -- vim.cmd("keepalt keepjumps terminal")
+    vim.cmd.terminal()
+    vim.bo.buflisted = false
+    vim.api.nvim_create_autocmd("BufUnload", {
+      buf = term_buf,
+      callback = function()
+        term_buf = nil
+        float_term_win = nil
+      end,
+    })
+  end
+end
+vim.keymap.set({ "n", "t" }, "<c-/>", toggle_terminal)
+vim.keymap.set({ "n", "t" }, "<c-_>", toggle_terminal)
 
 -- Plugins and Related Configs
 
@@ -174,6 +219,7 @@ vim.pack.add({
   },
   gh("stevearc/conform.nvim"),
   gh("Old-Farmer/im-autoswitch.nvim"),
+  gh("brianhuster/live-preview.nvim"),
   gh("mason-org/mason.nvim"),
   gh("windwp/nvim-autopairs"),
   gh("mfussenegger/nvim-lint"),
@@ -219,6 +265,7 @@ local lsp_config = {
       "--completion-style=detailed",
       "--fallback-style=google",
       "--function-arg-placeholders=false",
+      "--log=error", -- avoid too large log
     },
   },
   -- https://go.dev/gopls/editor/vim#a-hrefneovim-config-idneovim-configconfigurationa
@@ -368,26 +415,29 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Treesitter
-local ts_lang = {
+local ts_ensure_installed_lang = {
   "bash",
-  "c",
   "cpp",
   "cmake",
   "go",
   "java",
   "json",
-  "lua",
-  "markdown",
-  "markdown_inline",
   "python",
   "sql",
-  "vim",
-  "vimdoc",
   "rust",
   "toml",
   "yaml",
 }
-require("nvim-treesitter").install(ts_lang)
+local ts_lang = {
+  "c",
+  "lua",
+  "markdown",
+  "markdown_inline",
+  "vim",
+  "vimdoc",
+}
+vim.list_extend(ts_lang, ts_ensure_installed_lang)
+require("nvim-treesitter").install(ts_ensure_installed_lang)
 vim.api.nvim_create_autocmd("FileType", {
   pattern = ts_lang,
   callback = function()
@@ -499,47 +549,15 @@ else
   })
 end
 
--- Float Terminal
-local function fullscreen_float(buf)
-  buf = buf or vim.api.nvim_create_buf(false, true)
-  local win = vim.api.nvim_open_win(buf, true, {
-    relative = "editor",
-    width = vim.o.columns,
-    height = vim.o.lines - 1,
-    row = 0,
-    col = 0,
-    style = "minimal",
-    border = "none",
-  })
-  return win, buf
-end
-
-local term_buf, float_term_win
-local function toggle_terminal()
-  if float_term_win then
-    vim.api.nvim_win_close(0, false)
-    float_term_win = nil
-    return
-  end
-
-  if term_buf then
-    float_term_win = fullscreen_float(term_buf)
-  else
-    float_term_win, term_buf = fullscreen_float()
-    -- vim.cmd("keepalt keepjumps terminal")
-    vim.cmd.terminal()
-    vim.bo.buflisted = false
-    vim.api.nvim_create_autocmd("BufUnload", {
-      buf = term_buf,
-      callback = function()
-        term_buf = nil
-        float_term_win = nil
-      end,
-    })
-  end
-end
-vim.keymap.set({ "n", "t" }, "<C-/>", toggle_terminal)
-vim.keymap.set({ "n", "t" }, "<C-_>", toggle_terminal)
+-- markdown preview
+require("livepreview.config").set({
+  port = 5500,
+  browser = "default",
+  dynamic_root = false,
+  sync_scroll = true,
+  picker = "",
+  address = "127.0.0.1",
+})
 
 -- ACP
 local agentic = require("agentic")

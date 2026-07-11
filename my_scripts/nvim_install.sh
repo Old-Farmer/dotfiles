@@ -2,7 +2,7 @@
 
 function split_version() {
     local version=${1:1}
-    IFS='.' read -r major minor patch <<< "$version"
+    IFS='.' read -r major minor patch <<<"$version"
     echo "$major" "$minor" "$patch"
 }
 
@@ -39,7 +39,12 @@ function install_nvim_by_appimage() {
 
 function install_nvim_by_binary() {
     cd "$HOME"
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    # curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    if [ $? -ne 0 ]; then
+        echo "Download latest neovim binary error."
+        return 1
+    fi
     mv nvim-linux-x86_64 nvim-linux-x86_64-prev
     tar -xzvf nvim-linux-x86_64.tar.gz
     rm nvim-linux-x86_64.tar.gz

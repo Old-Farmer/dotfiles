@@ -11,7 +11,7 @@ if vim.g.vscode then
   vim.o.smartcase = true
   vim.o.timeoutlen = 2000
   vim.o.virtualedit = "onemore" -- ref https://github.com/vscode-neovim/vscode-neovim/issues/1498
-  vim.o.clipboard = "unnamedplus"
+  -- vim.o.clipboard = "unnamedplus"
 
   local vscode = require("vscode")
   local map = vim.keymap.set
@@ -354,78 +354,34 @@ end
 
 -- plugins
 
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
+local function gh(path)
+  return "https://github.com/" .. path
 end
-vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
-  spec = {
-    {
-      "Old-Farmer/im-autoswitch.nvim",
-      event = "BufEnter",
-      opts = {
-        cmd_os = {
-          linux = {
-            default_im = "keyboard-us",
-            get_im_cmd = "fcitx5-remote -n",
-            switch_im_cmd = "fcitx5-remote -s {}",
-          },
-          macos = {
-            default_im = "com.apple.keylayout.ABC",
-            get_im_cmd = "im-select",
-            switch_im_cmd = "im-select {}",
-          },
-          windows = {
-            default_im = "1033", -- 2052
-            get_im_cmd = "im-select.exe",
-            switch_im_cmd = "im-select.exe {}",
-          },
-        },
-        mode = {
-          terminal = false,
-        },
-        check_wsl = true,
-      },
+vim.pack.add({
+  gh("Old-Farmer/im-autoswitch.nvim"),
+})
+
+require("imas").setup({
+  cmd_os = {
+    linux = {
+      default_im = "keyboard-us",
+      get_im_cmd = "fcitx5-remote -n",
+      switch_im_cmd = "fcitx5-remote -s {}",
+    },
+    macos = {
+      default_im = "com.apple.keylayout.ABC",
+      get_im_cmd = "im-select",
+      switch_im_cmd = "im-select {}",
+    },
+    windows = {
+      default_im = "1033", -- 2052
+      get_im_cmd = "im-select.exe",
+      switch_im_cmd = "im-select.exe {}",
     },
   },
-  defaults = {
-    lazy = true,
-    -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-    -- have outdated releases, which may break your Neovim install.
-    version = false, -- always use the latest git commit
-    -- version = "*", -- try installing the latest stable version for plugins that support semver
+  mode = {
+    terminal = false,
   },
-  install = { colorscheme = { "habamax" } },
-  checker = {
-    enabled = true,
-    notify = false,
-  }, -- automatically check for plugin updates
-  performance = {
-    rtp = {
-      -- disable some rtp plugins
-      disabled_plugins = {
-        "gzip",
-        "matchit",
-        "matchparen",
-        "netrwPlugin",
-        "tarPlugin",
-        "tohtml",
-        "tutor",
-        "zipPlugin",
-      },
-    },
-  },
+  check_wsl = true,
 })
