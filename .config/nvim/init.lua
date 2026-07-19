@@ -1,5 +1,9 @@
 -- Neovim configs by CharlieCC
 
+local map = vim.keymap.set
+local augroup = vim.api.nvim_create_augroup
+local autocmd = vim.api.nvim_create_autocmd
+
 -- General Options, Keymaps, Autocmds, User Commands
 
 vim.cmd([=[
@@ -13,7 +17,7 @@ set relativenumber
 " Schedule time-consuming 'set clipboard'
 " lua vim.schedule(function() vim.o.clipboard="unnamedplus" end)
 
-set timeoutlen=50000
+set timeoutlen=10000
 
 set undofile
 
@@ -60,6 +64,8 @@ set wildignorecase
 set completeopt+=fuzzy
 
 set exrc
+
+set path+=**
 
 if exists("g:neovide")
   let g:neovide_padding_top = 10
@@ -179,8 +185,8 @@ local function toggle_terminal()
     })
   end
 end
-vim.keymap.set({ "n", "t" }, "<c-/>", toggle_terminal)
-vim.keymap.set({ "n", "t" }, "<c-_>", toggle_terminal)
+map({ "n", "t" }, "<c-/>", toggle_terminal)
+map({ "n", "t" }, "<c-_>", toggle_terminal)
 
 -- Plugins and Related Configs
 
@@ -190,7 +196,7 @@ let loaded_netrwPlugin = 1
 packadd nvim.undotree
 ]])
 
-vim.api.nvim_create_autocmd("PackChanged", {
+autocmd("PackChanged", {
   callback = function(ev)
     local name, kind = ev.data.spec.name, ev.data.kind
     if name == "nvim-treesitter" and kind == "update" then
@@ -222,6 +228,7 @@ vim.pack.add({
   gh("brianhuster/live-preview.nvim"),
   gh("mason-org/mason.nvim"),
   gh("windwp/nvim-autopairs"),
+  gh("mfussenegger/nvim-jdtls"),
   gh("mfussenegger/nvim-lint"),
   gh("neovim/nvim-lspconfig"),
   gh("nvim-treesitter/nvim-treesitter"),
@@ -241,6 +248,7 @@ command MasonInstallAll
 \ basedpyright
 \ clangd
 \ gopls
+\ jdtls
 \ json-lsp
 \ lua-language-server
 \ neocmakelsp
@@ -291,6 +299,7 @@ local lsp_config = {
       },
     },
   },
+  jdtls = {},
   jsonls = {
     -- See
     -- https://github.com/microsoft/vscode/blob/main/extensions/json-language-features/package.json
@@ -371,7 +380,7 @@ local lsp_onattach = {
   ---@diagnostic disable-next-line: unused-local
   gopls = function(ev)
     -- Organize imports
-    vim.keymap.set("n", "<leader>co", function()
+    map("n", "<leader>co", function()
       vim.lsp.buf.code_action({
         context = {
           only = { "source.organizeImports" },
@@ -381,12 +390,16 @@ local lsp_onattach = {
       })
     end, { buffer = true })
   end,
+  ---@diagnostic disable-next-line: unused-local
+  jdtls = function(ev)
+    vim.cmd([[nmap <buffer> <leader>co <cmd>lua require("jdtls").organize_imports()<cr>]])
+  end,
 }
 for server, config in pairs(lsp_config) do
   vim.lsp.config(server, config)
 end
 vim.lsp.enable(vim.tbl_keys(lsp_config))
-local lsp_group = vim.api.nvim_create_augroup("my.lsp.config", { clear = true })
+local lsp_group = augroup("my.lsp.config", { clear = true })
 vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
   callback = function(ev)
@@ -493,7 +506,7 @@ conform.setup({
     sh = { "shfmt" },
   },
 })
-vim.keymap.set({ "n", "v" }, "<leader>f", function()
+map({ "n", "v" }, "<leader>f", function()
   conform.format({ async = true, lsp_fallback = true })
 end)
 
@@ -510,15 +523,15 @@ if vim.g.neovide then
     end
   end
 
-  local ime_input = vim.api.nvim_create_augroup("ime_input", { clear = true })
+  local ime_input = augroup("ime_input", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
+  autocmd({ "InsertEnter", "InsertLeave" }, {
     group = ime_input,
     pattern = "*",
     callback = set_ime,
   })
 
-  vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineLeave" }, {
+  autocmd({ "CmdlineEnter", "CmdlineLeave" }, {
     group = ime_input,
     pattern = "[/\\?]",
     callback = set_ime,
@@ -564,7 +577,7 @@ local agentic = require("agentic")
 agentic.setup({
   provider = "copilot-acp",
 })
-vim.keymap.set({ "n" }, "<leader>aa", agentic.toggle)
-vim.keymap.set({ "n", "v" }, "<leader>as", agentic.add_selection_or_file_to_context)
-vim.keymap.set({ "n" }, "<leader>ar", agentic.restore_session)
-vim.keymap.set({ "n" }, "<leader>an", agentic.new_session)
+map({ "n" }, "<leader>aa", agentic.toggle)
+map({ "n", "v" }, "<leader>as", agentic.add_selection_or_file_to_context)
+map({ "n" }, "<leader>ar", agentic.restore_session)
+map({ "n" }, "<leader>an", agentic.new_session)
