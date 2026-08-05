@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# just for wsl2 env
+
+dir="/cores/"
+
+if [[ ! -d "$dir" ]]; then
+    echo "Error: $dir is not a valid dir"
+    exit 1
+fi
+
+latest_file=$(find "$dir" -type f -print0 | xargs -0 ls -t | head -n 1)
+
+if [[ -z "$latest_file" ]]; then
+    echo ""
+    exit 1
+fi
+
+echo "$latest_file"
+

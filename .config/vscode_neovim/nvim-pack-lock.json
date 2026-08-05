@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "im-autoswitch.nvim": {
+      "rev": "4a0c37ebe6ad50141a4a9c0663f472fd694c0dd3",
+      "src": "https://github.com/Old-Farmer/im-autoswitch.nvim"
+    }
+  }
+}
