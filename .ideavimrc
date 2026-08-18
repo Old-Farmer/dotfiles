@@ -74,12 +74,15 @@ nmap gri <Action>(GotoImplementation)
 nmap grr <Action>(ShowUsages)
 nmap gs <Action>(GotoSuperMethod)
 nmap grt <Action>(GotoTypeDeclaration)
+nmap grn <Action>(RenameElement)
 nmap K <Action>(ShowHoverInfo)
 nmap [d <Action>(GotoPreviousError)
 nmap ]d <Action>(GotoNextError)
+nmap <C-w>d <Action>(ShowErrorDescription)
  " Use this wierd map to make <c-e> to close popup window
 inoremap <c-e> `<bs>
 "imap <c-e> <Action>(PopupMenu-cancel)
+imap <C-s> <Action>(ParameterInfo)
 
 " preview
 nmap <leader>pi <Action>(QuickImplementations)
