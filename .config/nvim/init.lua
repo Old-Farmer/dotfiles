@@ -218,14 +218,12 @@ vim.pack.add({
 })
 
 vim.pack.add({
-  gh("carlos-algms/agentic.nvim"),
   {
     src = gh("saghen/blink.cmp"),
     version = vim.version.range("1.*"),
   },
   gh("stevearc/conform.nvim"),
   gh("Old-Farmer/im-autoswitch.nvim"),
-  gh("brianhuster/live-preview.nvim"),
   gh("mason-org/mason.nvim"),
   gh("windwp/nvim-autopairs"),
   gh("mfussenegger/nvim-jdtls"),
@@ -412,10 +410,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
       return
     end
 
-    -- codelens is not that good support in neovim, disable it now.
-    -- if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
-    --   vim.lsp.codelens.enable(true)
-    -- end
+    if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
+      vim.lsp.codelens.enable(true)
+    end
     if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
       vim.lsp.inlay_hint.enable(true, { bufnr = 0 })
     end
@@ -561,23 +558,3 @@ else
     check_wsl = true,
   })
 end
-
--- markdown preview
-require("livepreview.config").set({
-  port = 5500,
-  browser = "default",
-  dynamic_root = false,
-  sync_scroll = true,
-  picker = "",
-  address = "127.0.0.1",
-})
-
--- ACP
-local agentic = require("agentic")
-agentic.setup({
-  provider = "copilot-acp",
-})
-map({ "n" }, "<leader>aa", agentic.toggle)
-map({ "n", "v" }, "<leader>as", agentic.add_selection_or_file_to_context)
-map({ "n" }, "<leader>ar", agentic.restore_session)
-map({ "n" }, "<leader>an", agentic.new_session)

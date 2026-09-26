@@ -188,3 +188,12 @@ function cmake_vcpkg() {
 
 # zig
 export PATH=$PATH:~/zig-x86_64-linux-0.16.0/
+
+# mysql shell
+function mysqlsh_root() {
+    sudo mysqlsh --sqlc --user=root --socket=/var/run/mysqld/mysqld.sock --no-password
+}
+
+# mvn
+# installed by apt
+export MAVEN_HOME="/usr/share/maven"
