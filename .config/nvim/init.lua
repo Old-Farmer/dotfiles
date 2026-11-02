@@ -224,6 +224,7 @@ vim.pack.add({
   },
   gh("stevearc/conform.nvim"),
   gh("Old-Farmer/im-autoswitch.nvim"),
+  gh("sammaji/markdown-preview.nvim"),
   gh("mason-org/mason.nvim"),
   gh("windwp/nvim-autopairs"),
   gh("mfussenegger/nvim-jdtls"),
@@ -283,6 +284,7 @@ local lsp_config = {
           unusedparams = true,
         },
         -- gofumpt = true,
+        -- completeUnimported = false,
         hints = {
           rangeVariableTypes = true,
           parameterNames = true,
@@ -501,6 +503,7 @@ conform.setup({
   formatters_by_ft = {
     lua = { "stylua" },
     sh = { "shfmt" },
+    python = { "ruff" },
   },
 })
 map({ "n", "v" }, "<leader>f", function()

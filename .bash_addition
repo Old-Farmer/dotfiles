@@ -197,3 +197,6 @@ function mysqlsh_root() {
 # mvn
 # installed by apt
 export MAVEN_HOME="/usr/share/maven"
+
+# cuda
+export PATH=${PATH}:/usr/local/cuda-13.4/bin
