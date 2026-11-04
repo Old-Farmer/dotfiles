@@ -306,7 +306,7 @@ local lsp_config = {
     -- contributes.configuration.properties
     settings = {
       json = {
-        keepLines = { enable = true },
+        keepLines = { enable = false },
       },
     },
   },

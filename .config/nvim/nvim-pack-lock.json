@@ -22,6 +22,10 @@
       "rev": "364ccb0355d3ee7e8d393cb06278f72b9bb326be",
       "src": "https://github.com/Old-Farmer/im-autoswitch.nvim"
     },
+    "live-preview.nvim": {
+      "rev": "dad92ae9599f9b19a7dffe7d597d3376c110b818",
+      "src": "https://github.com/brianhuster/live-preview.nvim"
+    },
     "markdown-preview.nvim": {
       "rev": "168d5fbbd7acfb6b736c5f4d881a423bc9fa6604",
       "src": "https://github.com/sammaji/markdown-preview.nvim"
@@ -43,15 +47,15 @@
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "d8d2fda7aae57030452ce8cd6e770b1eb704514e",
+      "rev": "adfbb74472f6c231b651b650a89f414c2680fb31",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-tree.lua": {
-      "rev": "45f82f7b2c68c3e2bedbf6ad1d8d687a78e6faf4",
+      "rev": "69eb0c34ed3d836d5a0d92d913b77dd73b054f2f",
       "src": "https://github.com/nvim-tree/nvim-tree.lua"
     },
     "nvim-treesitter": {
-      "rev": "a9c4e1457e2e59f1b82c8f78dcdb3b2517555200",
+      "rev": "0195cd62fa89950f34c0e0d648ea7897ab85d4d3",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-web-devicons": {
